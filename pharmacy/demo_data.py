@@ -574,3 +574,135 @@ def loyalty_programme(company, abbr):
 		"cost_center": frappe.get_cached_value("Company", company, "cost_center"),
 		"collection_rules": [{"tier_name": "Member", "collection_factor": 100, "min_spent": 0}],
 	}).insert(ignore_permissions=True)
+
+
+# ---- batch + serial numbered test item (medical device: each unit has a serial, units come in batches)
+
+SERIAL_ITEM = "ACCUCHEK-ACTIVE"
+
+
+def create_serial_demo_item(company="_Test Pharmacy"):
+	"""Accu-Chek Active glucometer: batch AND serial numbered, with serials in stock at the DC and both stores."""
+	from frappe.utils import add_days, today
+
+	abbr = frappe.db.get_value("Company", company, "abbr")
+	ensure("Brand", "Accu-Chek", {"brand": "Accu-Chek"})
+	ensure("Manufacturer", "Roche Diabetes Care", {"short_name": "Roche Diabetes Care", "full_name": "Roche Diabetes Care India"})
+	if not frappe.db.exists("Item", SERIAL_ITEM):
+		templates = dict(frappe.get_all("Item Tax Template", filters={"company": company, "disabled": 0},
+			fields=["gst_rate", "name"], as_list=True))
+		item = frappe.get_doc({
+			"doctype": "Item", "item_code": SERIAL_ITEM, "item_name": "Accu-Chek Active Glucometer Kit",
+			"description": "Blood glucose meter with 10 strips (serial numbered device)", "brand": "Accu-Chek",
+			"item_group": "Surgical" if frappe.db.exists("Item Group", "Surgical") else "All Item Groups",
+			"stock_uom": "Nos", "sales_uom": "Nos", "purchase_uom": "Nos", "is_stock_item": 1,
+			"has_batch_no": 1, "create_new_batch": 0, "has_expiry_date": 1, "shelf_life_in_days": 1095,
+			"has_serial_no": 1, "serial_no_series": "ACG-.#####",
+			"gst_hsn_code": "90278090", "valuation_rate": 950, "nir_regulatory_category": "OTC",
+			"nir_storage_condition": "Ambient", "nir_dosage_form": "Device", "nir_manufacturer": "Roche Diabetes Care",
+			"nir_marketer": "Roche", "taxes": [{"item_tax_template": templates[18]}] if 18 in templates else [],
+			"barcodes": [{"barcode": ean13(999), "barcode_type": "EAN", "uom": "Nos"}],
+		})
+		item.flags.ignore_permissions = True
+		item.insert()
+		if item.meta.has_field("nir_approval_status"):
+			item.db_set({"nir_approval_status": "Approved", "disabled": 0})
+	for price_list, rate in (("Standard Buying", 950), ("Standard Selling", 1499)):
+		if not frappe.db.exists("Item Price", {"item_code": SERIAL_ITEM, "price_list": price_list}):
+			frappe.get_doc({"doctype": "Item Price", "price_list": price_list, "item_code": SERIAL_ITEM, "uom": "Nos",
+				"price_list_rate": rate, "nir_approval_status": "Approved"}).insert(ignore_permissions=True)
+
+	if frappe.db.exists("Serial No", {"item_code": SERIAL_ITEM}):
+		return
+	locations = [w for w in (f"DC General A1 - {abbr}", f"Store Andheri - {abbr}", f"Store Bandra - {abbr}") if frappe.db.exists("Warehouse", w)]
+	rows, n = [], 0
+	for warehouse in locations:
+		at_dc = warehouse.startswith("DC ")
+		batch_id = f"{SERIAL_ITEM}-{'DC' if at_dc else warehouse.split()[1][:3].upper()}1"
+		if not frappe.db.exists("Batch", batch_id):
+			frappe.get_doc({"doctype": "Batch", "batch_id": batch_id, "item": SERIAL_ITEM, "supplier_batch_no": batch_id.rsplit("-", 1)[-1],
+				"manufacturing_date": add_days(today(), -90), "expiry_date": add_days(today(), 1000),
+				"nir_mrp": 1499, "nir_mrp_uom": "Nos"}).insert(ignore_permissions=True)
+		serials = []
+		for _ in range(5 if at_dc else 3):
+			n += 1
+			serials.append(f"ACG-DEMO-{n:04d}")
+		rows.append({"item_code": SERIAL_ITEM, "warehouse": warehouse, "qty": len(serials), "valuation_rate": 950,
+			"batch_no": batch_id, "serial_no": "\n".join(serials), "use_serial_batch_fields": 1})
+	if not rows:
+		return
+	opening_account = frappe.db.get_value("Account", {"company": company, "account_name": "Temporary Opening", "is_group": 0})
+	reco = frappe.get_doc({"doctype": "Stock Reconciliation", "company": company, "purpose": "Opening Stock",
+		"expense_account": opening_account, "remarks": "Demo glucometers (batch + serial)", "items": rows})
+	reco.insert(ignore_permissions=True)
+	reco.submit()
+
+
+# ---- one-click loader for a new site (Company form → Load Pharmacy Demo Data)
+
+DEMO_STEPS = (
+	("Catalogue (items, salts, prices, barcodes)", "create_demo_items"),
+	("DC, bins, stores, suppliers, licences, opening stock, store sales", "create_purchase_suggestion_data"),
+	("Store POS data (batches, holds, POS profiles, customers, offers)", "create_pos_test_data"),
+	("Online ordering (settings, pincodes, addresses, coupon, loyalty)", "create_online_order_data"),
+	("Batch + serial numbered item (glucometer)", "create_serial_demo_item"),
+)
+
+
+@frappe.whitelist(methods=["POST"])
+def load_demo_data(company: str):
+	"""Queue every demo-data step for this company; the user is notified when it finishes."""
+	frappe.only_for("System Manager")
+	if not frappe.db.exists("Company", company):
+		frappe.throw(f"Company {company} not found")
+	if frappe.db.get_value("Company", company, "country") != "India":
+		frappe.throw("The pharmacy demo data needs an Indian company (GST, drug licences)")
+	frappe.enqueue("pharmacy.demo_data.run_demo_steps", queue="long", timeout=3600, company=company,
+		user=frappe.session.user, job_id=f"pharmacy-demo-{company}", deduplicate=True)
+	return "Queued: you'll get a notification when the demo data is loaded."
+
+
+def ensure_fiscal_year(company):
+	"""Opening stock and sales need a fiscal year covering the last 30 days and today for this company."""
+	from erpnext.accounts.utils import FiscalYearError, get_fiscal_year
+	from frappe.utils import add_days, getdate, today
+
+	for day in (add_days(today(), -60), today()):
+		try:
+			get_fiscal_year(day, company=company)
+			continue
+		except FiscalYearError:
+			pass
+		d = getdate(day)
+		start_year = d.year if d.month >= 4 else d.year - 1
+		name = f"{start_year}-{start_year + 1}"
+		fy = frappe.get_doc("Fiscal Year", name) if frappe.db.exists("Fiscal Year", name) else frappe.get_doc({
+			"doctype": "Fiscal Year", "year": name, "year_start_date": f"{start_year}-04-01", "year_end_date": f"{start_year + 1}-03-31"})
+		if fy.is_new():
+			fy.append("companies", {"company": company})
+			fy.insert(ignore_permissions=True)
+		elif fy.get("companies") and company not in [r.company for r in fy.companies]:
+			fy.append("companies", {"company": company})
+			fy.save(ignore_permissions=True)
+
+
+def run_demo_steps(company, user=None):
+	done, failed = [], []
+	ensure_fiscal_year(company)
+	for label, fn in DEMO_STEPS:
+		try:
+			frappe.get_attr(f"pharmacy.demo_data.{fn}")(company=company)
+			frappe.db.commit()
+			done.append(label)
+		except Exception:
+			frappe.db.rollback()
+			frappe.log_error(title=f"Pharmacy demo data: {label}")
+			failed.append(label)
+	if user:
+		subject = f"Pharmacy demo data for {company}: {len(done)} of {len(DEMO_STEPS)} steps loaded"
+		if failed:
+			subject += " — failed: " + "; ".join(failed) + " (see Error Log)"
+		frappe.get_doc({"doctype": "Notification Log", "for_user": user, "type": "Alert", "document_type": "Company",
+			"document_name": company, "subject": subject}).insert(ignore_permissions=True)
+		frappe.db.commit()
+	return {"done": done, "failed": failed}

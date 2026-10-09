@@ -99,6 +99,7 @@ doctype_js = {
 	"Customer": "public/js/customer.js",
 	"Sales Order": "public/js/online_sales_order.js",
 	"Delivery Trip": "public/js/delivery_trip.js",
+	"Company": "public/js/company.js",
 	"Sales Invoice": "public/js/store_bill.js",
 }
 

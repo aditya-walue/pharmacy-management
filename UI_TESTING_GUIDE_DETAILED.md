@@ -397,6 +397,17 @@ After pulling new code: `bench --site pharmacy.local migrate`, `bench build --ap
 
 ---
 
+### Loading demo data on a new site (e.g. Frappe Cloud)
+
+Company form (an Indian company, as System Manager) → **Pharmacy → Load Pharmacy Demo Data** → confirm. It runs in the background and you get a notification with how many steps loaded. Failures are listed and the details go to *Error Log*. Steps, each safe to re-run:
+1. Catalogue: 25 real Indian brands with salts, prices and barcodes.
+2. DC *Main DC* with bins, stores *Store Andheri* / *Store Bandra*, suppliers with licences, opening stock and 30 days of store sales.
+3. POS data: store batches (incl. an expired and a recalled one), POS profiles, customers and offers.
+4. Online ordering: settings, store pincodes and addresses, coupon WELCOME10 and loyalty programme.
+5. **Batch + serial test item** `ACCUCHEK-ACTIVE` (Accu-Chek Active glucometer, MRP ₹1,499): serials `ACG-DEMO-0001…` with 5 in *DC General A1* (batch …-DC1), 3 at Store Andheri (…-AND1) and 3 at Store Bandra (…-BAN1). Selling or receiving it asks for both batch and serial numbers.
+
+A fiscal year covering today is added first if the company has none.
+
 ## 1. Implementations Completed
 
 | # | Module | What it does |
