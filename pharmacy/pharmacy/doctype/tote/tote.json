@@ -1,0 +1,244 @@
+{
+ "actions": [],
+ "creation": "2026-10-08 22:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "tote_id",
+  "tote_type",
+  "status",
+  "column_break_t",
+  "current_wave",
+  "store_warehouse",
+  "section_break_seal",
+  "seal_no",
+  "sealed_by",
+  "sealed_on",
+  "column_break_c",
+  "ice_packs",
+  "packed_temperature",
+  "dispatch_doctype",
+  "dispatch_name",
+  "section_break_custody",
+  "holder_store",
+  "issued_on",
+  "column_break_custody",
+  "last_trip"
+ ],
+ "fields": [
+  {
+   "fieldname": "tote_id",
+   "fieldtype": "Data",
+   "label": "Tote ID",
+   "reqd": 1,
+   "unique": 1,
+   "in_list_view": 1,
+   "description": "Printed on the tote's barcode label"
+  },
+  {
+   "fieldname": "tote_type",
+   "fieldtype": "Select",
+   "label": "Tote Type",
+   "options": "Standard\nCrate\nInsulated Cold Box\nScheduled Drugs",
+   "reqd": 1,
+   "default": "Standard",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "description": "Insulated Cold Box = ice box for 2-8\u00b0C items"
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "Available\nIn Use\nSealed\nDispatched\nIn Transit\nAt Store\nMissing\nDamaged",
+   "default": "Available",
+   "read_only": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "column_break_t",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "current_wave",
+   "fieldtype": "Link",
+   "label": "Pick Wave",
+   "options": "Pick Wave",
+   "read_only": 1
+  },
+  {
+   "fieldname": "store_warehouse",
+   "fieldtype": "Link",
+   "label": "For Store",
+   "options": "Warehouse",
+   "read_only": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "section_break_seal",
+   "fieldtype": "Section Break",
+   "label": "Seal & Cold Chain"
+  },
+  {
+   "fieldname": "seal_no",
+   "fieldtype": "Data",
+   "label": "Seal No",
+   "read_only": 1
+  },
+  {
+   "fieldname": "sealed_by",
+   "fieldtype": "Link",
+   "label": "Sealed By",
+   "options": "User",
+   "read_only": 1
+  },
+  {
+   "fieldname": "sealed_on",
+   "fieldtype": "Datetime",
+   "label": "Sealed On",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_c",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "ice_packs",
+   "fieldtype": "Int",
+   "label": "Ice Packs",
+   "read_only": 1
+  },
+  {
+   "fieldname": "packed_temperature",
+   "fieldtype": "Data",
+   "label": "Temperature at Packing (\u00b0C)",
+   "read_only": 1
+  },
+  {
+   "fieldname": "dispatch_doctype",
+   "fieldtype": "Link",
+   "label": "Dispatched On",
+   "options": "DocType",
+   "read_only": 1
+  },
+  {
+   "fieldname": "dispatch_name",
+   "fieldtype": "Dynamic Link",
+   "label": "Dispatch Document",
+   "options": "dispatch_doctype",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_custody",
+   "fieldtype": "Section Break",
+   "label": "Custody"
+  },
+  {
+   "fieldname": "holder_store",
+   "fieldtype": "Link",
+   "label": "Held by Store",
+   "options": "Warehouse",
+   "read_only": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "issued_on",
+   "fieldtype": "Datetime",
+   "label": "Issued to Store On",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_custody",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "last_trip",
+   "fieldtype": "Link",
+   "label": "Last Trip",
+   "options": "Dispatch Trip",
+   "read_only": 1
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "links": [],
+ "modified": "2026-10-09 10:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "pharmacy",
+ "name": "Tote",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "read": 1,
+   "report": 1,
+   "export": 1,
+   "print": 1,
+   "email": 1,
+   "share": 1,
+   "create": 1,
+   "write": 1,
+   "delete": 1,
+   "role": "System Manager"
+  },
+  {
+   "read": 1,
+   "report": 1,
+   "export": 1,
+   "print": 1,
+   "email": 1,
+   "share": 1,
+   "create": 1,
+   "write": 1,
+   "delete": 1,
+   "role": "Warehouse Manager"
+  },
+  {
+   "read": 1,
+   "report": 1,
+   "export": 1,
+   "print": 1,
+   "email": 1,
+   "share": 1,
+   "create": 1,
+   "write": 1,
+   "delete": 1,
+   "role": "Picker Packer"
+  },
+  {
+   "read": 1,
+   "report": 1,
+   "export": 1,
+   "print": 1,
+   "email": 1,
+   "share": 1,
+   "create": 1,
+   "write": 1,
+   "delete": 1,
+   "role": "Dispatch Coordinator"
+  },
+  {
+   "read": 1,
+   "report": 1,
+   "export": 1,
+   "print": 1,
+   "email": 1,
+   "share": 1,
+   "role": "Store Pharmacist"
+  },
+  {
+   "read": 1,
+   "report": 1,
+   "export": 1,
+   "print": 1,
+   "email": 1,
+   "share": 1,
+   "role": "Driver"
+  }
+ ],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "autoname": "field:tote_id",
+ "naming_rule": "By fieldname",
+ "track_changes": 1
+}

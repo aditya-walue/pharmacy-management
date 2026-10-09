@@ -1,0 +1,275 @@
+{
+ "actions": [],
+ "creation": "2026-10-09 13:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "company",
+  "store_warehouse",
+  "dispatch_doctype",
+  "dispatch_name",
+  "column_break_h",
+  "check_level",
+  "delivered_on",
+  "window_ends",
+  "status",
+  "section_break_totes",
+  "totes",
+  "section_break_items",
+  "items",
+  "section_break_out",
+  "stock_entry",
+  "inter_company_invoice",
+  "transfer_discrepancy",
+  "auto_received",
+  "amended_from"
+ ],
+ "fields": [
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "Company",
+   "options": "Company",
+   "reqd": 1,
+   "read_only": 1
+  },
+  {
+   "fieldname": "store_warehouse",
+   "fieldtype": "Link",
+   "label": "Store",
+   "options": "Warehouse",
+   "reqd": 1,
+   "read_only": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "dispatch_doctype",
+   "fieldtype": "Link",
+   "label": "Shipment Type",
+   "options": "DocType",
+   "reqd": 1,
+   "read_only": 1
+  },
+  {
+   "fieldname": "dispatch_name",
+   "fieldtype": "Dynamic Link",
+   "label": "Shipment",
+   "options": "dispatch_doctype",
+   "reqd": 1,
+   "read_only": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "column_break_h",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "check_level",
+   "fieldtype": "Select",
+   "label": "Check Level",
+   "options": "Tote Level\nFull Check",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "delivered_on",
+   "fieldtype": "Datetime",
+   "label": "Delivered On",
+   "read_only": 1
+  },
+  {
+   "fieldname": "window_ends",
+   "fieldtype": "Datetime",
+   "label": "Report Discrepancies By",
+   "read_only": 1
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "Draft\nReceived\nReceived with Discrepancy\nAuto-Received\nCancelled",
+   "default": "Draft",
+   "read_only": 1,
+   "allow_on_submit": 1,
+   "no_copy": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "section_break_totes",
+   "fieldtype": "Section Break",
+   "label": "Totes"
+  },
+  {
+   "fieldname": "totes",
+   "fieldtype": "Table",
+   "label": "Totes",
+   "options": "Store Receipt Tote"
+  },
+  {
+   "fieldname": "section_break_items",
+   "fieldtype": "Section Break",
+   "label": "Items"
+  },
+  {
+   "fieldname": "items",
+   "fieldtype": "Table",
+   "label": "Items",
+   "options": "Store Receipt Item"
+  },
+  {
+   "fieldname": "section_break_out",
+   "fieldtype": "Section Break",
+   "label": "Result",
+   "collapsible": 1
+  },
+  {
+   "fieldname": "stock_entry",
+   "fieldtype": "Link",
+   "label": "Receipt Entry",
+   "options": "Stock Entry",
+   "read_only": 1,
+   "allow_on_submit": 1,
+   "no_copy": 1
+  },
+  {
+   "fieldname": "inter_company_invoice",
+   "fieldtype": "Link",
+   "label": "Inter-company Purchase Invoice",
+   "options": "Purchase Invoice",
+   "read_only": 1,
+   "allow_on_submit": 1,
+   "no_copy": 1
+  },
+  {
+   "fieldname": "transfer_discrepancy",
+   "fieldtype": "Link",
+   "label": "Discrepancy",
+   "options": "Transfer Discrepancy",
+   "read_only": 1,
+   "allow_on_submit": 1,
+   "no_copy": 1
+  },
+  {
+   "fieldname": "auto_received",
+   "fieldtype": "Check",
+   "label": "Auto-received after Window",
+   "read_only": 1,
+   "no_copy": 1
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "options": "Store Receipt",
+   "read_only": 1,
+   "no_copy": 1,
+   "print_hide": 1
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "links": [],
+ "modified": "2026-10-09 13:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "pharmacy",
+ "name": "Store Receipt",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "read": 1,
+   "report": 1,
+   "export": 1,
+   "print": 1,
+   "email": 1,
+   "share": 1,
+   "create": 1,
+   "write": 1,
+   "delete": 1,
+   "submit": 1,
+   "cancel": 1,
+   "amend": 1,
+   "role": "System Manager"
+  },
+  {
+   "read": 1,
+   "report": 1,
+   "export": 1,
+   "print": 1,
+   "email": 1,
+   "share": 1,
+   "create": 1,
+   "write": 1,
+   "delete": 1,
+   "submit": 1,
+   "cancel": 1,
+   "amend": 1,
+   "role": "Store Pharmacist"
+  },
+  {
+   "read": 1,
+   "report": 1,
+   "export": 1,
+   "print": 1,
+   "email": 1,
+   "share": 1,
+   "create": 1,
+   "write": 1,
+   "delete": 1,
+   "submit": 1,
+   "cancel": 1,
+   "amend": 1,
+   "role": "Warehouse Manager"
+  },
+  {
+   "read": 1,
+   "report": 1,
+   "export": 1,
+   "print": 1,
+   "email": 1,
+   "share": 1,
+   "create": 1,
+   "write": 1,
+   "delete": 1,
+   "submit": 1,
+   "cancel": 1,
+   "amend": 1,
+   "role": "Dispatch Coordinator"
+  },
+  {
+   "read": 1,
+   "report": 1,
+   "export": 1,
+   "print": 1,
+   "email": 1,
+   "share": 1,
+   "role": "Area Manager"
+  },
+  {
+   "read": 1,
+   "report": 1,
+   "export": 1,
+   "print": 1,
+   "email": 1,
+   "share": 1,
+   "role": "Pharmacy Management"
+  },
+  {
+   "read": 1,
+   "report": 1,
+   "export": 1,
+   "print": 1,
+   "email": 1,
+   "share": 1,
+   "role": "Pharmacy Accounts"
+  }
+ ],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "is_submittable": 1,
+ "autoname": "format:SR-{YYYY}-{#####}",
+ "naming_rule": "Expression",
+ "track_changes": 1,
+ "title_field": "store_warehouse"
+}

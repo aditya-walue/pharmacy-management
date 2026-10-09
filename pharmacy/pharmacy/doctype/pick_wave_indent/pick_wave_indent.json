@@ -1,0 +1,48 @@
+{
+ "actions": [],
+ "creation": "2026-10-08 22:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "material_request",
+  "store_warehouse",
+  "pharmacy_store"
+ ],
+ "fields": [
+  {
+   "fieldname": "material_request",
+   "fieldtype": "Link",
+   "label": "Store Indent",
+   "options": "Material Request",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "store_warehouse",
+   "fieldtype": "Link",
+   "label": "Store",
+   "options": "Warehouse",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "pharmacy_store",
+   "fieldtype": "Link",
+   "label": "Pharmacy Store",
+   "options": "Pharmacy Store",
+   "in_list_view": 1
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "links": [],
+ "modified": "2026-10-08 22:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "pharmacy",
+ "name": "Pick Wave Indent",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "istable": 1,
+ "editable_grid": 0
+}

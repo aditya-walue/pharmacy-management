@@ -1,0 +1,214 @@
+{
+ "actions": [],
+ "creation": "2026-10-08 22:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "company",
+  "source_warehouse",
+  "route",
+  "column_break_h",
+  "wave_date",
+  "dispatch_time",
+  "status",
+  "section_break_indents",
+  "indents",
+  "section_break_items",
+  "items",
+  "section_break_totes",
+  "totes",
+  "section_break_dispatch",
+  "dispatches"
+ ],
+ "fields": [
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "Company",
+   "options": "Company",
+   "reqd": 1
+  },
+  {
+   "fieldname": "source_warehouse",
+   "fieldtype": "Link",
+   "label": "DC",
+   "options": "Warehouse",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "route",
+   "fieldtype": "Link",
+   "label": "Route",
+   "reqd": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "options": "Delivery Route"
+  },
+  {
+   "fieldname": "column_break_h",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "wave_date",
+   "fieldtype": "Date",
+   "label": "Wave Date",
+   "reqd": 1,
+   "default": "Today",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "dispatch_time",
+   "fieldtype": "Time",
+   "label": "Dispatch Time"
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "Draft\nAllocated\nPicking\nPicked\nDispatched\nCancelled",
+   "default": "Draft",
+   "read_only": 1,
+   "no_copy": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "section_break_indents",
+   "fieldtype": "Section Break",
+   "label": "Store Indents"
+  },
+  {
+   "fieldname": "indents",
+   "fieldtype": "Table",
+   "label": "Indents",
+   "options": "Pick Wave Indent"
+  },
+  {
+   "fieldname": "section_break_items",
+   "fieldtype": "Section Break",
+   "label": "Pick Lines"
+  },
+  {
+   "fieldname": "items",
+   "fieldtype": "Table",
+   "label": "Lines",
+   "options": "Pick Wave Item"
+  },
+  {
+   "fieldname": "section_break_totes",
+   "fieldtype": "Section Break",
+   "label": "Totes",
+   "collapsible": 1
+  },
+  {
+   "fieldname": "totes",
+   "fieldtype": "Table",
+   "label": "Totes",
+   "options": "Pick Wave Tote"
+  },
+  {
+   "fieldname": "section_break_dispatch",
+   "fieldtype": "Section Break",
+   "label": "Dispatch Documents",
+   "collapsible": 1
+  },
+  {
+   "fieldname": "dispatches",
+   "fieldtype": "Table",
+   "label": "Dispatch Documents",
+   "options": "Pick Wave Dispatch"
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "links": [],
+ "modified": "2026-10-09 10:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "pharmacy",
+ "name": "Pick Wave",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "read": 1,
+   "report": 1,
+   "export": 1,
+   "print": 1,
+   "email": 1,
+   "share": 1,
+   "create": 1,
+   "write": 1,
+   "delete": 1,
+   "role": "System Manager"
+  },
+  {
+   "read": 1,
+   "report": 1,
+   "export": 1,
+   "print": 1,
+   "email": 1,
+   "share": 1,
+   "create": 1,
+   "write": 1,
+   "delete": 1,
+   "role": "Warehouse Manager"
+  },
+  {
+   "read": 1,
+   "report": 1,
+   "export": 1,
+   "print": 1,
+   "email": 1,
+   "share": 1,
+   "create": 1,
+   "write": 1,
+   "delete": 1,
+   "role": "Picker Packer"
+  },
+  {
+   "read": 1,
+   "report": 1,
+   "export": 1,
+   "print": 1,
+   "email": 1,
+   "share": 1,
+   "create": 1,
+   "write": 1,
+   "delete": 1,
+   "role": "Dispatch Coordinator"
+  },
+  {
+   "read": 1,
+   "report": 1,
+   "export": 1,
+   "print": 1,
+   "email": 1,
+   "share": 1,
+   "role": "Store Pharmacist"
+  },
+  {
+   "read": 1,
+   "report": 1,
+   "export": 1,
+   "print": 1,
+   "email": 1,
+   "share": 1,
+   "role": "Area Manager"
+  },
+  {
+   "read": 1,
+   "report": 1,
+   "export": 1,
+   "print": 1,
+   "email": 1,
+   "share": 1,
+   "role": "Pharmacy Management"
+  }
+ ],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "autoname": "format:WAVE-{YYYY}-{#####}",
+ "naming_rule": "Expression",
+ "track_changes": 1,
+ "title_field": "route"
+}

@@ -1,0 +1,278 @@
+{
+ "actions": [],
+ "creation": "2026-10-09 10:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "company",
+  "trip_date",
+  "route",
+  "status",
+  "column_break_v",
+  "vehicle_ownership",
+  "vehicle",
+  "transporter",
+  "vehicle_no",
+  "hire_charges",
+  "column_break_d",
+  "driver",
+  "driver_name",
+  "driver_mobile",
+  "departure_time",
+  "return_time",
+  "section_break_stops",
+  "stops",
+  "section_break_manifest",
+  "totes",
+  "section_break_returns",
+  "returns"
+ ],
+ "fields": [
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "Company",
+   "options": "Company",
+   "reqd": 1
+  },
+  {
+   "fieldname": "trip_date",
+   "fieldtype": "Date",
+   "label": "Trip Date",
+   "reqd": 1,
+   "default": "Today",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "route",
+   "fieldtype": "Link",
+   "label": "Route",
+   "options": "Delivery Route",
+   "reqd": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "Planned\nLoading\nDeparted\nCompleted\nCancelled",
+   "default": "Planned",
+   "read_only": 1,
+   "no_copy": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "column_break_v",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "vehicle_ownership",
+   "fieldtype": "Select",
+   "label": "Vehicle",
+   "options": "Own\nHired",
+   "default": "Own",
+   "reqd": 1
+  },
+  {
+   "fieldname": "vehicle",
+   "fieldtype": "Link",
+   "label": "Own Vehicle",
+   "options": "Vehicle",
+   "depends_on": "eval:doc.vehicle_ownership=='Own'",
+   "mandatory_depends_on": "eval:doc.vehicle_ownership=='Own'"
+  },
+  {
+   "fieldname": "transporter",
+   "fieldtype": "Link",
+   "label": "Transporter",
+   "options": "Supplier",
+   "depends_on": "eval:doc.vehicle_ownership=='Hired'",
+   "mandatory_depends_on": "eval:doc.vehicle_ownership=='Hired'"
+  },
+  {
+   "fieldname": "vehicle_no",
+   "fieldtype": "Data",
+   "label": "Vehicle No",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "hire_charges",
+   "fieldtype": "Currency",
+   "label": "Hire Charges",
+   "depends_on": "eval:doc.vehicle_ownership=='Hired'"
+  },
+  {
+   "fieldname": "column_break_d",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "driver",
+   "fieldtype": "Link",
+   "label": "Driver",
+   "options": "Driver",
+   "reqd": 1
+  },
+  {
+   "fieldname": "driver_name",
+   "fieldtype": "Data",
+   "label": "Driver Name",
+   "fetch_from": "driver.full_name",
+   "read_only": 1
+  },
+  {
+   "fieldname": "driver_mobile",
+   "fieldtype": "Data",
+   "label": "Driver Mobile",
+   "fetch_from": "driver.cell_number",
+   "read_only": 1
+  },
+  {
+   "fieldname": "departure_time",
+   "fieldtype": "Datetime",
+   "label": "Departed",
+   "read_only": 1,
+   "no_copy": 1
+  },
+  {
+   "fieldname": "return_time",
+   "fieldtype": "Datetime",
+   "label": "Completed",
+   "read_only": 1,
+   "no_copy": 1
+  },
+  {
+   "fieldname": "section_break_stops",
+   "fieldtype": "Section Break",
+   "label": "Stops"
+  },
+  {
+   "fieldname": "stops",
+   "fieldtype": "Table",
+   "label": "Stops",
+   "options": "Dispatch Trip Stop"
+  },
+  {
+   "fieldname": "section_break_manifest",
+   "fieldtype": "Section Break",
+   "label": "Load Manifest"
+  },
+  {
+   "fieldname": "totes",
+   "fieldtype": "Table",
+   "label": "Totes",
+   "options": "Dispatch Trip Tote"
+  },
+  {
+   "fieldname": "section_break_returns",
+   "fieldtype": "Section Break",
+   "label": "Empties Returned",
+   "collapsible": 1
+  },
+  {
+   "fieldname": "returns",
+   "fieldtype": "Table",
+   "label": "Returned Totes",
+   "options": "Dispatch Trip Return"
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "links": [],
+ "modified": "2026-10-09 10:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "pharmacy",
+ "name": "Dispatch Trip",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "read": 1,
+   "report": 1,
+   "export": 1,
+   "print": 1,
+   "email": 1,
+   "share": 1,
+   "create": 1,
+   "write": 1,
+   "delete": 1,
+   "role": "System Manager"
+  },
+  {
+   "read": 1,
+   "report": 1,
+   "export": 1,
+   "print": 1,
+   "email": 1,
+   "share": 1,
+   "create": 1,
+   "write": 1,
+   "delete": 1,
+   "role": "Dispatch Coordinator"
+  },
+  {
+   "read": 1,
+   "report": 1,
+   "export": 1,
+   "print": 1,
+   "email": 1,
+   "share": 1,
+   "create": 1,
+   "write": 1,
+   "delete": 1,
+   "role": "Warehouse Manager"
+  },
+  {
+   "read": 1,
+   "report": 1,
+   "export": 1,
+   "print": 1,
+   "email": 1,
+   "share": 1,
+   "role": "Driver"
+  },
+  {
+   "read": 1,
+   "report": 1,
+   "export": 1,
+   "print": 1,
+   "email": 1,
+   "share": 1,
+   "role": "Store Pharmacist"
+  },
+  {
+   "read": 1,
+   "report": 1,
+   "export": 1,
+   "print": 1,
+   "email": 1,
+   "share": 1,
+   "role": "Area Manager"
+  },
+  {
+   "read": 1,
+   "report": 1,
+   "export": 1,
+   "print": 1,
+   "email": 1,
+   "share": 1,
+   "role": "Picker Packer"
+  },
+  {
+   "read": 1,
+   "report": 1,
+   "export": 1,
+   "print": 1,
+   "email": 1,
+   "share": 1,
+   "role": "Pharmacy Management"
+  }
+ ],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "autoname": "format:TRIP-{YYYY}-{#####}",
+ "naming_rule": "Expression",
+ "track_changes": 1,
+ "title_field": "route"
+}

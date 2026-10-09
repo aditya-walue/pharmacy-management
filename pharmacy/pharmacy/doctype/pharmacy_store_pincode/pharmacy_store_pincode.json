@@ -1,0 +1,70 @@
+{
+ "actions": [],
+ "creation": "2026-10-08 12:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "pincode",
+  "delivery_type",
+  "is_active",
+  "distance_km",
+  "delivery_hours",
+  "cod_allowed"
+ ],
+ "fields": [
+  {
+   "fieldname": "pincode",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Pincode",
+   "reqd": 1
+  },
+  {
+   "default": "Same Day",
+   "fieldname": "delivery_type",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Delivery Type",
+   "options": "Same Day\nNext Day\nStandard\nExpress 2hr"
+  },
+  {
+   "default": "1",
+   "fieldname": "is_active",
+   "fieldtype": "Check",
+   "in_list_view": 1,
+   "label": "Active"
+  },
+  {
+   "fieldname": "distance_km",
+   "fieldtype": "Float",
+   "label": "Distance (km)",
+   "in_list_view": 1,
+   "description": "Nearest store with stock gets the order"
+  },
+  {
+   "fieldname": "delivery_hours",
+   "fieldtype": "Int",
+   "label": "Delivery Time (Hours)",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "cod_allowed",
+   "fieldtype": "Check",
+   "label": "COD",
+   "default": "1",
+   "in_list_view": 1
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "istable": 1,
+ "links": [],
+ "modified": "2026-10-09 18:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "pharmacy",
+ "name": "Pharmacy Store Pincode",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

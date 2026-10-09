@@ -1,0 +1,252 @@
+{
+ "actions": [],
+ "creation": "2026-10-08 00:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "item_code",
+  "item_name",
+  "uom",
+  "abc_class",
+  "cb_head",
+  "preferred_supplier",
+  "scheme_name",
+  "scheme_discount_pct",
+  "free_goods_qty",
+  "stock_section",
+  "current_stock",
+  "open_po_qty",
+  "store_demand_qty",
+  "online_demand_qty",
+  "total_demand_qty",
+  "daily_demand",
+  "cb_stock",
+  "lead_time_days",
+  "safety_stock_days",
+  "safety_stock_qty",
+  "required_qty",
+  "available_qty",
+  "order_section",
+  "suggested_qty",
+  "moq_qty",
+  "ordered_qty",
+  "cb_order",
+  "last_purchase_rate",
+  "net_rate",
+  "estimated_value",
+  "notes"
+ ],
+ "fields": [
+  {
+   "fieldname": "item_code",
+   "fieldtype": "Link",
+   "label": "Item",
+   "options": "Item",
+   "reqd": 1,
+   "in_list_view": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "item_name",
+   "fieldtype": "Data",
+   "label": "Item Name",
+   "fetch_from": "item_code.item_name",
+   "read_only": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "uom",
+   "fieldtype": "Link",
+   "label": "UOM",
+   "options": "UOM",
+   "read_only": 1
+  },
+  {
+   "fieldname": "abc_class",
+   "fieldtype": "Data",
+   "label": "ABC",
+   "read_only": 1,
+   "in_list_view": 1,
+   "columns": 1
+  },
+  {
+   "fieldname": "cb_head",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "preferred_supplier",
+   "fieldtype": "Link",
+   "label": "Supplier",
+   "options": "Supplier",
+   "read_only": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "scheme_name",
+   "fieldtype": "Data",
+   "label": "Scheme",
+   "read_only": 1
+  },
+  {
+   "fieldname": "scheme_discount_pct",
+   "fieldtype": "Percent",
+   "label": "Scheme Disc %",
+   "read_only": 1
+  },
+  {
+   "fieldname": "free_goods_qty",
+   "fieldtype": "Float",
+   "label": "Free Goods Qty",
+   "read_only": 1
+  },
+  {
+   "fieldname": "stock_section",
+   "fieldtype": "Section Break",
+   "label": "Stock & Demand",
+   "collapsible": 1
+  },
+  {
+   "fieldname": "current_stock",
+   "fieldtype": "Float",
+   "label": "Current Stock",
+   "read_only": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "open_po_qty",
+   "fieldtype": "Float",
+   "label": "Open PO Qty",
+   "read_only": 1
+  },
+  {
+   "fieldname": "store_demand_qty",
+   "fieldtype": "Float",
+   "label": "Store Demand",
+   "read_only": 1
+  },
+  {
+   "fieldname": "online_demand_qty",
+   "fieldtype": "Float",
+   "label": "Online Demand",
+   "read_only": 1
+  },
+  {
+   "fieldname": "total_demand_qty",
+   "fieldtype": "Float",
+   "label": "Total Demand",
+   "read_only": 1
+  },
+  {
+   "fieldname": "daily_demand",
+   "fieldtype": "Float",
+   "label": "Daily Demand",
+   "read_only": 1,
+   "precision": "4"
+  },
+  {
+   "fieldname": "cb_stock",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "lead_time_days",
+   "fieldtype": "Int",
+   "label": "Lead Time (Days)",
+   "read_only": 1
+  },
+  {
+   "fieldname": "safety_stock_days",
+   "fieldtype": "Int",
+   "label": "Safety Stock Days",
+   "read_only": 1
+  },
+  {
+   "fieldname": "safety_stock_qty",
+   "fieldtype": "Float",
+   "label": "Safety Stock Qty",
+   "read_only": 1
+  },
+  {
+   "fieldname": "required_qty",
+   "fieldtype": "Float",
+   "label": "Required Qty",
+   "read_only": 1,
+   "description": "demand_during_lead_time + safety_stock"
+  },
+  {
+   "fieldname": "available_qty",
+   "fieldtype": "Float",
+   "label": "Available Qty",
+   "read_only": 1,
+   "description": "current_stock + open_po_qty"
+  },
+  {
+   "fieldname": "order_section",
+   "fieldtype": "Section Break",
+   "label": "Order"
+  },
+  {
+   "fieldname": "suggested_qty",
+   "fieldtype": "Float",
+   "label": "Suggested Qty",
+   "in_list_view": 1,
+   "description": "System computed; edit Ordered Qty to override."
+  },
+  {
+   "fieldname": "moq_qty",
+   "fieldtype": "Float",
+   "label": "MOQ",
+   "read_only": 1
+  },
+  {
+   "fieldname": "ordered_qty",
+   "fieldtype": "Float",
+   "label": "Ordered Qty",
+   "bold": 1,
+   "in_list_view": 1,
+   "description": "Editable. Defaults to suggested_qty rounded up to MOQ."
+  },
+  {
+   "fieldname": "cb_order",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "last_purchase_rate",
+   "fieldtype": "Currency",
+   "label": "Last Purchase Rate",
+   "read_only": 1
+  },
+  {
+   "fieldname": "net_rate",
+   "fieldtype": "Currency",
+   "label": "Net Rate",
+   "read_only": 1,
+   "description": "After scheme discount."
+  },
+  {
+   "fieldname": "estimated_value",
+   "fieldtype": "Currency",
+   "label": "Est. Value (₹)",
+   "read_only": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "notes",
+   "fieldtype": "Small Text",
+   "label": "Notes"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2026-10-08 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Pharmacy",
+ "name": "Purchase Suggestion Item",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 0
+}

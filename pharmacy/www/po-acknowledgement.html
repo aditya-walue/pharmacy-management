@@ -1,0 +1,119 @@
+{% extends "templates/web.html" %}
+
+{% block title %}{{ _("Purchase Order Acknowledgement") }}{% endblock %}
+
+{% block header %}
+	<h3 class="m-0">{{ doc.name if doc else _("Purchase Orders to Acknowledge") }}</h3>
+{% endblock %}
+
+{% block page_content %}
+{% if doc %}
+	<p class="text-muted">
+		{{ frappe.format(doc.transaction_date, {"fieldtype": "Date"}) }} &middot;
+		{{ frappe.format(doc.grand_total, {"fieldtype": "Currency", "options": doc.currency}) }}
+		{% if doc.nir_acknowledged_on %}
+			&middot; {{ _("Acknowledged on {0}").format(frappe.format(doc.nir_acknowledged_on, {"fieldtype": "Datetime"})) }}
+		{% endif %}
+	</p>
+
+	<form id="po-ack-form">
+		<table class="table table-sm">
+			<thead>
+				<tr>
+					<th>{{ _("Item") }}</th>
+					<th class="text-right">{{ _("Qty") }}</th>
+					<th>{{ _("Required By") }}</th>
+					<th>{{ _("Expected Delivery (if different)") }}</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for row in doc.items %}
+				<tr>
+					<td>{{ row.item_name | e }} <span class="text-muted">({{ row.item_code | e }})</span>{% if row.is_free_item %} &middot; {{ _("Free") }}{% endif %}</td>
+					<td class="text-right">{{ row.qty }} {{ row.uom | e }}</td>
+					<td>{{ frappe.format(row.schedule_date, {"fieldtype": "Date"}) }}</td>
+					<td><input type="date" class="form-control form-control-sm" data-row="{{ row.name }}"
+						value="{{ row.expected_delivery_date or '' }}" {% if not is_open %}disabled{% endif %}></td>
+				</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+
+		<div class="row">
+			<div class="col-sm-4 form-group">
+				<label>{{ _("Expected Delivery Date") }} *</label>
+				<input type="date" name="expected_delivery_date" class="form-control" required
+					min="{{ doc.transaction_date }}" value="{{ doc.nir_expected_delivery_date or '' }}" {% if not is_open %}disabled{% endif %}>
+			</div>
+			<div class="col-sm-4 form-group">
+				<label>{{ _("Your Order Confirmation No") }}</label>
+				<input type="text" name="confirmation_no" class="form-control" value="{{ (doc.order_confirmation_no or '') | e }}" {% if not is_open %}disabled{% endif %}>
+			</div>
+		</div>
+		<div class="form-group">
+			<label>{{ _("Remarks") }}</label>
+			<textarea name="remarks" class="form-control" rows="2" {% if not is_open %}disabled{% endif %}>{{ (doc.nir_ack_remarks or '') | e }}</textarea>
+		</div>
+		{% if is_open %}
+			<button type="submit" class="btn btn-primary">{{ _("Acknowledge Purchase Order") }}</button>
+		{% endif %}
+		<a href="/po-acknowledgement" class="btn btn-link">{{ _("All Purchase Orders") }}</a>
+	</form>
+
+	<script>
+		frappe.ready(() => {
+			const form = document.getElementById("po-ack-form");
+			form.addEventListener("submit", (event) => {
+				event.preventDefault();
+				const header = form.elements.expected_delivery_date.value;
+				const lines = {};
+				form.querySelectorAll("input[data-row]").forEach((input) => {
+					if (input.value && input.value !== header) lines[input.dataset.row] = input.value;
+				});
+				frappe.call({
+					method: "pharmacy.overrides.po_dispatch.acknowledge_po",
+					args: {
+						purchase_order: {{ doc.name | tojson }},
+						expected_delivery_date: header,
+						confirmation_no: form.elements.confirmation_no.value,
+						remarks: form.elements.remarks.value,
+						lines: JSON.stringify(lines),
+					},
+					btn: form.querySelector("button[type=submit]"),
+					callback: () => {
+						frappe.msgprint({{ _("Thank you. The Purchase Order is acknowledged.") | tojson }});
+						setTimeout(() => window.location.reload(), 1500);
+					},
+				});
+			});
+		});
+	</script>
+{% else %}
+	{% if orders %}
+	<table class="table">
+		<thead>
+			<tr>
+				<th>{{ _("Purchase Order") }}</th>
+				<th>{{ _("Date") }}</th>
+				<th class="text-right">{{ _("Value") }}</th>
+				<th>{{ _("Status") }}</th>
+				<th>{{ _("Expected Delivery") }}</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for order in orders %}
+			<tr>
+				<td><a href="/po-acknowledgement?name={{ order.name | urlencode }}">{{ order.name }}</a></td>
+				<td>{{ frappe.format(order.transaction_date, {"fieldtype": "Date"}) }}</td>
+				<td class="text-right">{{ frappe.format(order.grand_total, {"fieldtype": "Currency", "options": order.currency}) }}</td>
+				<td>{{ _("Acknowledged") if order.nir_po_email_status == "Acknowledged" else _("Awaiting acknowledgement") }}</td>
+				<td>{{ frappe.format(order.nir_expected_delivery_date, {"fieldtype": "Date"}) if order.nir_expected_delivery_date else "" }}</td>
+			</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+	{% else %}
+		<p class="text-muted">{{ _("No open Purchase Orders.") }}</p>
+	{% endif %}
+{% endif %}
+{% endblock %}

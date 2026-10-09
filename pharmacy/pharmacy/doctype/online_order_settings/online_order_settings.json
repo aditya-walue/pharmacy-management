@@ -1,0 +1,237 @@
+{
+ "actions": [],
+ "creation": "2026-10-09 18:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "company",
+  "price_list",
+  "taxes_and_charges",
+  "column_break_a",
+  "customer_group",
+  "territory",
+  "min_order_value",
+  "section_break_fulfil",
+  "fulfilment_mode",
+  "dc_warehouse",
+  "column_break_f",
+  "dc_ships_to_all_pincodes",
+  "dc_delivery_hours",
+  "store_order_cutoff",
+  "section_break_charges",
+  "delivery_charge",
+  "free_delivery_above",
+  "column_break_c",
+  "delivery_charge_account",
+  "section_break_pay",
+  "payment_gateway_account",
+  "column_break_p",
+  "cod_enabled",
+  "cod_max_amount",
+  "cod_mode_of_payment",
+  "section_break_rx",
+  "prescription_validity_days",
+  "column_break_r",
+  "payment_success_path"
+ ],
+ "fields": [
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "Company",
+   "options": "Company",
+   "reqd": 1
+  },
+  {
+   "fieldname": "price_list",
+   "fieldtype": "Link",
+   "label": "Selling Price List",
+   "options": "Price List",
+   "reqd": 1,
+   "default": "Standard Selling"
+  },
+  {
+   "fieldname": "taxes_and_charges",
+   "fieldtype": "Link",
+   "label": "Taxes Template",
+   "options": "Sales Taxes and Charges Template",
+   "description": "MRP-inclusive GST template"
+  },
+  {
+   "fieldname": "column_break_a",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "customer_group",
+   "fieldtype": "Link",
+   "label": "Customer Group",
+   "options": "Customer Group",
+   "reqd": 1
+  },
+  {
+   "fieldname": "territory",
+   "fieldtype": "Link",
+   "label": "Territory",
+   "options": "Territory",
+   "reqd": 1
+  },
+  {
+   "fieldname": "min_order_value",
+   "fieldtype": "Currency",
+   "label": "Minimum Order Value"
+  },
+  {
+   "fieldname": "section_break_fulfil",
+   "fieldtype": "Section Break",
+   "label": "Fulfilment"
+  },
+  {
+   "fieldname": "fulfilment_mode",
+   "fieldtype": "Select",
+   "label": "When One Location Cannot Fill the Order",
+   "options": "Split\nTransfer to One Location",
+   "default": "Split",
+   "reqd": 1
+  },
+  {
+   "fieldname": "dc_warehouse",
+   "fieldtype": "Link",
+   "label": "Warehouse (DC)",
+   "options": "Warehouse",
+   "description": "Used when no store serving the pincode has the stock"
+  },
+  {
+   "fieldname": "column_break_f",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "dc_ships_to_all_pincodes",
+   "fieldtype": "Check",
+   "label": "DC Ships to All Pincodes",
+   "default": "1"
+  },
+  {
+   "fieldname": "dc_delivery_hours",
+   "fieldtype": "Int",
+   "label": "DC Delivery Time (Hours)",
+   "default": "48"
+  },
+  {
+   "fieldname": "store_order_cutoff",
+   "fieldtype": "Time",
+   "label": "Same-day Cut-off",
+   "default": "18:00:00",
+   "description": "Orders after this are counted from the next morning"
+  },
+  {
+   "fieldname": "section_break_charges",
+   "fieldtype": "Section Break",
+   "label": "Delivery Charges"
+  },
+  {
+   "fieldname": "delivery_charge",
+   "fieldtype": "Currency",
+   "label": "Delivery Charge"
+  },
+  {
+   "fieldname": "free_delivery_above",
+   "fieldtype": "Currency",
+   "label": "Free Delivery Above"
+  },
+  {
+   "fieldname": "column_break_c",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "delivery_charge_account",
+   "fieldtype": "Link",
+   "label": "Delivery Charge Account",
+   "options": "Account"
+  },
+  {
+   "fieldname": "section_break_pay",
+   "fieldtype": "Section Break",
+   "label": "Payment"
+  },
+  {
+   "fieldname": "payment_gateway_account",
+   "fieldtype": "Link",
+   "label": "Payment Gateway Account",
+   "options": "Payment Gateway Account",
+   "description": "Razorpay: save Razorpay Settings with the API keys, then make a Payment Gateway Account for it (INR, bank / clearing account)"
+  },
+  {
+   "fieldname": "column_break_p",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "cod_enabled",
+   "fieldtype": "Check",
+   "label": "Cash on Delivery",
+   "default": "1"
+  },
+  {
+   "fieldname": "cod_max_amount",
+   "fieldtype": "Currency",
+   "label": "COD Limit",
+   "depends_on": "cod_enabled",
+   "description": "0 = no limit"
+  },
+  {
+   "fieldname": "cod_mode_of_payment",
+   "fieldtype": "Link",
+   "label": "Mode of Payment (COD)",
+   "options": "Mode of Payment",
+   "depends_on": "cod_enabled"
+  },
+  {
+   "fieldname": "section_break_rx",
+   "fieldtype": "Section Break",
+   "label": "Prescriptions"
+  },
+  {
+   "fieldname": "prescription_validity_days",
+   "fieldtype": "Int",
+   "label": "Prescription Valid For (Days)",
+   "default": "180"
+  },
+  {
+   "fieldname": "column_break_r",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "payment_success_path",
+   "fieldtype": "Data",
+   "label": "After Payment Redirect",
+   "default": "/orders",
+   "description": "Website path the customer returns to"
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "links": [],
+ "modified": "2026-10-09 19:30:00.000000",
+ "modified_by": "Administrator",
+ "module": "pharmacy",
+ "name": "Online Order Settings",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "role": "System Manager",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "print": 1,
+   "email": 1,
+   "share": 1
+  },
+  {
+   "role": "Pharmacy Management",
+   "read": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "issingle": 1
+}

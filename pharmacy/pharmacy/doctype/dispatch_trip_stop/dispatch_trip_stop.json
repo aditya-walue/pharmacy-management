@@ -1,0 +1,118 @@
+{
+ "actions": [],
+ "creation": "2026-10-09 10:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "sequence",
+  "store_warehouse",
+  "pharmacy_store",
+  "dispatch_documents",
+  "totes",
+  "cold_boxes",
+  "scheduled_totes",
+  "distance_km",
+  "status",
+  "arrived_on",
+  "received_by"
+ ],
+ "fields": [
+  {
+   "fieldname": "sequence",
+   "fieldtype": "Int",
+   "label": "Seq",
+   "read_only": 1,
+   "in_list_view": 1,
+   "columns": 1
+  },
+  {
+   "fieldname": "store_warehouse",
+   "fieldtype": "Link",
+   "label": "Store",
+   "options": "Warehouse",
+   "read_only": 1,
+   "in_list_view": 1,
+   "columns": 2
+  },
+  {
+   "fieldname": "pharmacy_store",
+   "fieldtype": "Link",
+   "label": "Pharmacy Store",
+   "options": "Pharmacy Store",
+   "read_only": 1
+  },
+  {
+   "fieldname": "dispatch_documents",
+   "fieldtype": "Small Text",
+   "label": "Dispatch Documents",
+   "read_only": 1
+  },
+  {
+   "fieldname": "totes",
+   "fieldtype": "Int",
+   "label": "Totes",
+   "read_only": 1,
+   "in_list_view": 1,
+   "columns": 1
+  },
+  {
+   "fieldname": "cold_boxes",
+   "fieldtype": "Int",
+   "label": "Ice Boxes",
+   "read_only": 1,
+   "in_list_view": 1,
+   "columns": 1
+  },
+  {
+   "fieldname": "scheduled_totes",
+   "fieldtype": "Int",
+   "label": "Scheduled",
+   "read_only": 1,
+   "in_list_view": 1,
+   "columns": 1
+  },
+  {
+   "fieldname": "distance_km",
+   "fieldtype": "Float",
+   "label": "Km",
+   "read_only": 1
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "Pending\nDelivered",
+   "default": "Pending",
+   "read_only": 1,
+   "in_list_view": 1,
+   "columns": 1
+  },
+  {
+   "fieldname": "arrived_on",
+   "fieldtype": "Datetime",
+   "label": "Delivered On",
+   "read_only": 1,
+   "in_list_view": 1,
+   "columns": 2
+  },
+  {
+   "fieldname": "received_by",
+   "fieldtype": "Data",
+   "label": "Received By",
+   "read_only": 1
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "links": [],
+ "modified": "2026-10-09 10:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "pharmacy",
+ "name": "Dispatch Trip Stop",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "istable": 1,
+ "editable_grid": 0
+}

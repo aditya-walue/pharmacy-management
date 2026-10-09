@@ -1,0 +1,260 @@
+{
+ "actions": [],
+ "creation": "2026-10-09 13:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "company",
+  "from_store",
+  "to_store",
+  "purpose",
+  "online_order",
+  "column_break_p",
+  "status",
+  "total_value",
+  "section_break_patient",
+  "patient_name",
+  "patient_phone",
+  "column_break_pt",
+  "prescription",
+  "section_break_items",
+  "items",
+  "section_break_approval",
+  "approved_by",
+  "approved_on",
+  "approval_remarks",
+  "column_break_d",
+  "dispatch_doctype",
+  "dispatch_name"
+ ],
+ "fields": [
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "Company",
+   "options": "Company",
+   "reqd": 1
+  },
+  {
+   "fieldname": "from_store",
+   "fieldtype": "Link",
+   "label": "From Store",
+   "options": "Warehouse",
+   "reqd": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "to_store",
+   "fieldtype": "Link",
+   "label": "To Store",
+   "options": "Warehouse",
+   "reqd": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "purpose",
+   "fieldtype": "Select",
+   "label": "Purpose",
+   "options": "Patient Need\nStock Balancing\nOnline Order",
+   "reqd": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "column_break_p",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "Draft\nPending Approval\nApproved\nDispatched\nRejected",
+   "default": "Draft",
+   "read_only": 1,
+   "no_copy": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "total_value",
+   "fieldtype": "Currency",
+   "label": "Value",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_patient",
+   "fieldtype": "Section Break",
+   "label": "Patient",
+   "depends_on": "eval:doc.purpose=='Patient Need'"
+  },
+  {
+   "fieldname": "patient_name",
+   "fieldtype": "Data",
+   "label": "Patient Name",
+   "mandatory_depends_on": "eval:doc.purpose=='Patient Need'"
+  },
+  {
+   "fieldname": "patient_phone",
+   "fieldtype": "Data",
+   "label": "Patient Phone",
+   "options": "Phone"
+  },
+  {
+   "fieldname": "column_break_pt",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "prescription",
+   "fieldtype": "Attach",
+   "label": "Prescription"
+  },
+  {
+   "fieldname": "section_break_items",
+   "fieldtype": "Section Break",
+   "label": "Items"
+  },
+  {
+   "fieldname": "items",
+   "fieldtype": "Table",
+   "label": "Items",
+   "options": "Store Transfer Request Item",
+   "reqd": 1
+  },
+  {
+   "fieldname": "section_break_approval",
+   "fieldtype": "Section Break",
+   "label": "Approval & Dispatch",
+   "collapsible": 1
+  },
+  {
+   "fieldname": "approved_by",
+   "fieldtype": "Link",
+   "label": "Approved By",
+   "options": "User",
+   "read_only": 1,
+   "no_copy": 1
+  },
+  {
+   "fieldname": "approved_on",
+   "fieldtype": "Datetime",
+   "label": "Approved On",
+   "read_only": 1,
+   "no_copy": 1
+  },
+  {
+   "fieldname": "approval_remarks",
+   "fieldtype": "Small Text",
+   "label": "Remarks",
+   "read_only": 1,
+   "no_copy": 1
+  },
+  {
+   "fieldname": "column_break_d",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "dispatch_doctype",
+   "fieldtype": "Link",
+   "label": "Dispatch Type",
+   "options": "DocType",
+   "read_only": 1,
+   "no_copy": 1
+  },
+  {
+   "fieldname": "dispatch_name",
+   "fieldtype": "Dynamic Link",
+   "label": "Dispatch Document",
+   "options": "dispatch_doctype",
+   "read_only": 1,
+   "no_copy": 1
+  },
+  {
+   "fieldname": "online_order",
+   "fieldtype": "Link",
+   "label": "Online Sales Order",
+   "options": "Sales Order",
+   "read_only": 1,
+   "depends_on": "eval:doc.purpose=='Online Order'"
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "links": [],
+ "modified": "2026-10-09 19:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "pharmacy",
+ "name": "Store Transfer Request",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "read": 1,
+   "report": 1,
+   "export": 1,
+   "print": 1,
+   "email": 1,
+   "share": 1,
+   "create": 1,
+   "write": 1,
+   "delete": 1,
+   "role": "System Manager"
+  },
+  {
+   "read": 1,
+   "report": 1,
+   "export": 1,
+   "print": 1,
+   "email": 1,
+   "share": 1,
+   "create": 1,
+   "write": 1,
+   "delete": 1,
+   "role": "Store Pharmacist"
+  },
+  {
+   "read": 1,
+   "report": 1,
+   "export": 1,
+   "print": 1,
+   "email": 1,
+   "share": 1,
+   "create": 1,
+   "write": 1,
+   "delete": 1,
+   "role": "Area Manager"
+  },
+  {
+   "read": 1,
+   "report": 1,
+   "export": 1,
+   "print": 1,
+   "email": 1,
+   "share": 1,
+   "role": "Warehouse Manager"
+  },
+  {
+   "read": 1,
+   "report": 1,
+   "export": 1,
+   "print": 1,
+   "email": 1,
+   "share": 1,
+   "role": "Dispatch Coordinator"
+  },
+  {
+   "read": 1,
+   "report": 1,
+   "export": 1,
+   "print": 1,
+   "email": 1,
+   "share": 1,
+   "role": "Pharmacy Management"
+  }
+ ],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "autoname": "format:STR-{YYYY}-{#####}",
+ "naming_rule": "Expression",
+ "track_changes": 1
+}

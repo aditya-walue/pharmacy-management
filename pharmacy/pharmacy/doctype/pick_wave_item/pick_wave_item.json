@@ -1,0 +1,188 @@
+{
+ "actions": [],
+ "creation": "2026-10-08 22:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "store_warehouse",
+  "item_code",
+  "item_name",
+  "batch_no",
+  "source_bin",
+  "zone",
+  "qty",
+  "picked_qty",
+  "status",
+  "column_break_x",
+  "tote",
+  "picked_by",
+  "short_qty",
+  "short_action",
+  "substitute_for",
+  "material_request",
+  "material_request_item",
+  "stock_uom",
+  "is_cold_chain",
+  "is_scheduled"
+ ],
+ "fields": [
+  {
+   "fieldname": "store_warehouse",
+   "fieldtype": "Link",
+   "label": "Store",
+   "options": "Warehouse",
+   "read_only": 1,
+   "in_list_view": 1,
+   "columns": 2
+  },
+  {
+   "fieldname": "item_code",
+   "fieldtype": "Link",
+   "label": "Item",
+   "options": "Item",
+   "read_only": 1,
+   "in_list_view": 1,
+   "columns": 2
+  },
+  {
+   "fieldname": "item_name",
+   "fieldtype": "Data",
+   "label": "Item Name",
+   "fetch_from": "item_code.item_name",
+   "read_only": 1
+  },
+  {
+   "fieldname": "batch_no",
+   "fieldtype": "Link",
+   "label": "Batch",
+   "options": "Batch",
+   "read_only": 1,
+   "in_list_view": 1,
+   "columns": 2
+  },
+  {
+   "fieldname": "source_bin",
+   "fieldtype": "Link",
+   "label": "Pick From",
+   "options": "Warehouse",
+   "read_only": 1,
+   "in_list_view": 1,
+   "columns": 2
+  },
+  {
+   "fieldname": "zone",
+   "fieldtype": "Data",
+   "label": "Zone",
+   "read_only": 1
+  },
+  {
+   "fieldname": "qty",
+   "fieldtype": "Float",
+   "label": "Qty (Stock UOM)",
+   "read_only": 1,
+   "in_list_view": 1,
+   "columns": 1
+  },
+  {
+   "fieldname": "picked_qty",
+   "fieldtype": "Float",
+   "label": "Picked",
+   "read_only": 1,
+   "in_list_view": 1,
+   "columns": 1
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "Pending\nPicked\nShort",
+   "default": "Pending",
+   "read_only": 1,
+   "in_list_view": 1,
+   "columns": 1
+  },
+  {
+   "fieldname": "column_break_x",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "tote",
+   "fieldtype": "Link",
+   "label": "Tote",
+   "options": "Tote",
+   "read_only": 1
+  },
+  {
+   "fieldname": "picked_by",
+   "fieldtype": "Link",
+   "label": "Picked By",
+   "options": "User",
+   "read_only": 1
+  },
+  {
+   "fieldname": "short_qty",
+   "fieldtype": "Float",
+   "label": "Short Qty",
+   "read_only": 1
+  },
+  {
+   "fieldname": "short_action",
+   "fieldtype": "Select",
+   "label": "Short Action",
+   "options": "\nBackorder\nSubstitute\nCancel"
+  },
+  {
+   "fieldname": "substitute_for",
+   "fieldtype": "Link",
+   "label": "Substitute For",
+   "options": "Item",
+   "read_only": 1
+  },
+  {
+   "fieldname": "material_request",
+   "fieldtype": "Link",
+   "label": "Store Indent",
+   "options": "Material Request",
+   "read_only": 1
+  },
+  {
+   "fieldname": "material_request_item",
+   "fieldtype": "Data",
+   "label": "Indent Line",
+   "read_only": 1,
+   "hidden": 1
+  },
+  {
+   "fieldname": "stock_uom",
+   "fieldtype": "Link",
+   "label": "UOM",
+   "options": "UOM",
+   "read_only": 1
+  },
+  {
+   "fieldname": "is_cold_chain",
+   "fieldtype": "Check",
+   "label": "Cold Chain",
+   "read_only": 1
+  },
+  {
+   "fieldname": "is_scheduled",
+   "fieldtype": "Check",
+   "label": "Schedule X / NDPS",
+   "read_only": 1
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "links": [],
+ "modified": "2026-10-08 22:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "pharmacy",
+ "name": "Pick Wave Item",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "istable": 1,
+ "editable_grid": 0
+}

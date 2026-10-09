@@ -1,0 +1,129 @@
+{
+ "actions": [],
+ "creation": "2026-10-07 12:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "applies_to",
+  "item_group",
+  "regulatory_category",
+  "disabled",
+  "column_break_days",
+  "min_days_supplier_receipt",
+  "min_days_store_dispatch"
+ ],
+ "fields": [
+  {
+   "default": "Item Group",
+   "fieldname": "applies_to",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Applies To",
+   "options": "Item Group\nRegulatory Category",
+   "reqd": 1
+  },
+  {
+   "depends_on": "eval:doc.applies_to=='Item Group'",
+   "fieldname": "item_group",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Item Group",
+   "mandatory_depends_on": "eval:doc.applies_to=='Item Group'",
+   "options": "Item Group"
+  },
+  {
+   "depends_on": "eval:doc.applies_to=='Regulatory Category'",
+   "fieldname": "regulatory_category",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Regulatory Category",
+   "mandatory_depends_on": "eval:doc.applies_to=='Regulatory Category'",
+   "options": "OTC\nSchedule H\nSchedule H1\nSchedule X\nNDPS\nCosmetic\nFSSAI"
+  },
+  {
+   "default": "0",
+   "fieldname": "disabled",
+   "fieldtype": "Check",
+   "label": "Disabled"
+  },
+  {
+   "fieldname": "column_break_days",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "min_days_supplier_receipt",
+   "fieldtype": "Int",
+   "in_list_view": 1,
+   "label": "Min Days Supplier Receipt",
+   "non_negative": 1,
+   "reqd": 1
+  },
+  {
+   "fieldname": "min_days_store_dispatch",
+   "fieldtype": "Int",
+   "in_list_view": 1,
+   "label": "Min Days Store Dispatch",
+   "non_negative": 1,
+   "reqd": 1
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "links": [],
+ "modified": "2026-10-07 12:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "pharmacy",
+ "name": "Shelf Life Rule",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Category Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Compliance Pharmacist",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Store Pharmacist",
+   "share": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}

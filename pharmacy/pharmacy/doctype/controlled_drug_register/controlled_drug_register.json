@@ -1,0 +1,296 @@
+{
+ "actions": [],
+ "creation": "2026-10-08 19:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "register_type",
+  "posting_date",
+  "transaction_type",
+  "company",
+  "column_break_a",
+  "item_code",
+  "item_name",
+  "batch_no",
+  "expiry_date",
+  "section_break_party",
+  "party_type",
+  "party",
+  "supplier_invoice_no",
+  "column_break_v",
+  "voucher_type",
+  "voucher_no",
+  "warehouse",
+  "section_break_qty",
+  "qty_in",
+  "qty_out",
+  "balance_qty",
+  "column_break_q",
+  "stock_uom",
+  "recorded_by",
+  "section_break_rx",
+  "patient_name",
+  "patient_address",
+  "column_break_rx",
+  "doctor_name",
+  "doctor_reg_no",
+  "prescription"
+ ],
+ "fields": [
+  {
+   "fieldname": "register_type",
+   "fieldtype": "Select",
+   "label": "Register",
+   "options": "Schedule X\nNDPS\nSchedule H1",
+   "reqd": 1,
+   "read_only": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "posting_date",
+   "fieldtype": "Date",
+   "label": "Date",
+   "reqd": 1,
+   "read_only": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "transaction_type",
+   "fieldtype": "Select",
+   "label": "Transaction",
+   "options": "Receipt\nReceipt Reversal\nSale\nSale Reversal\nTransfer\nReturn\nDestruction",
+   "reqd": 1,
+   "read_only": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "Company",
+   "options": "Company",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_a",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "item_code",
+   "fieldtype": "Link",
+   "label": "Item",
+   "options": "Item",
+   "reqd": 1,
+   "read_only": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "item_name",
+   "fieldtype": "Data",
+   "label": "Item Name",
+   "fetch_from": "item_code.item_name",
+   "read_only": 1
+  },
+  {
+   "fieldname": "batch_no",
+   "fieldtype": "Link",
+   "label": "Batch",
+   "options": "Batch",
+   "read_only": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "expiry_date",
+   "fieldtype": "Date",
+   "label": "Expiry",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_party",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "party_type",
+   "fieldtype": "Select",
+   "label": "Party Type",
+   "options": "\nSupplier\nCustomer",
+   "read_only": 1
+  },
+  {
+   "fieldname": "party",
+   "fieldtype": "Dynamic Link",
+   "label": "Party",
+   "options": "party_type",
+   "read_only": 1
+  },
+  {
+   "fieldname": "supplier_invoice_no",
+   "fieldtype": "Data",
+   "label": "Supplier Invoice No",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_v",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "voucher_type",
+   "fieldtype": "Link",
+   "label": "Voucher Type",
+   "options": "DocType",
+   "read_only": 1
+  },
+  {
+   "fieldname": "voucher_no",
+   "fieldtype": "Dynamic Link",
+   "label": "Voucher No",
+   "options": "voucher_type",
+   "read_only": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "warehouse",
+   "fieldtype": "Link",
+   "label": "Warehouse",
+   "options": "Warehouse",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_qty",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "qty_in",
+   "fieldtype": "Float",
+   "label": "Qty In",
+   "read_only": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "qty_out",
+   "fieldtype": "Float",
+   "label": "Qty Out",
+   "read_only": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "balance_qty",
+   "fieldtype": "Float",
+   "label": "Balance",
+   "read_only": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "column_break_q",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "stock_uom",
+   "fieldtype": "Link",
+   "label": "UOM",
+   "options": "UOM",
+   "read_only": 1
+  },
+  {
+   "fieldname": "recorded_by",
+   "fieldtype": "Link",
+   "label": "Recorded By",
+   "options": "User",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_rx",
+   "fieldtype": "Section Break",
+   "label": "Prescription"
+  },
+  {
+   "fieldname": "patient_name",
+   "fieldtype": "Data",
+   "label": "Patient Name",
+   "read_only": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "patient_address",
+   "fieldtype": "Small Text",
+   "label": "Patient Address",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_rx",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "doctor_name",
+   "fieldtype": "Data",
+   "label": "Prescriber",
+   "read_only": 1
+  },
+  {
+   "fieldname": "doctor_reg_no",
+   "fieldtype": "Data",
+   "label": "Prescriber Reg. No",
+   "read_only": 1
+  },
+  {
+   "fieldname": "prescription",
+   "fieldtype": "Attach",
+   "label": "Prescription",
+   "read_only": 1
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "links": [],
+ "modified": "2026-10-09 15:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "pharmacy",
+ "name": "Controlled Drug Register",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "read": 1,
+   "report": 1,
+   "export": 1,
+   "print": 1,
+   "email": 1,
+   "share": 1,
+   "role": "System Manager"
+  },
+  {
+   "read": 1,
+   "report": 1,
+   "export": 1,
+   "print": 1,
+   "email": 1,
+   "share": 1,
+   "role": "Compliance Pharmacist"
+  },
+  {
+   "read": 1,
+   "report": 1,
+   "export": 1,
+   "print": 1,
+   "email": 1,
+   "share": 1,
+   "role": "Pharmacy Management"
+  },
+  {
+   "read": 1,
+   "report": 1,
+   "export": 1,
+   "print": 1,
+   "email": 1,
+   "share": 1,
+   "role": "Warehouse Manager"
+  }
+ ],
+ "sort_field": "creation",
+ "sort_order": "ASC",
+ "states": [],
+ "autoname": "format:CDR-{YYYY}-{#######}",
+ "naming_rule": "Expression",
+ "in_create": 1,
+ "title_field": "item_code"
+}

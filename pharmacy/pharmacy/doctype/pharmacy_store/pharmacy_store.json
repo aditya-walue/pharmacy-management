@@ -1,0 +1,221 @@
+{
+ "actions": [],
+ "creation": "2026-10-08 12:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "store_name",
+  "warehouse",
+  "serving_warehouse",
+  "column_break_layout",
+  "cluster",
+  "route",
+  "store_grade",
+  "section_break_compliance",
+  "drug_licence",
+  "column_break_compliance",
+  "gstin",
+  "address",
+  "online_orders",
+  "disabled",
+  "section_break_pincodes",
+  "pincodes_served",
+  "section_break_approval",
+  "nir_maker",
+  "nir_approval_status",
+  "column_break_approval",
+  "nir_approved_by",
+  "nir_approved_on"
+ ],
+ "fields": [
+  {
+   "fieldname": "store_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Store Name",
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "warehouse",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Store Warehouse",
+   "options": "Warehouse",
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "serving_warehouse",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Serving Warehouse (DC)",
+   "options": "Warehouse",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_layout",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "cluster",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Cluster",
+   "options": "Cluster"
+  },
+  {
+   "fieldname": "route",
+   "fieldtype": "Data",
+   "label": "Route"
+  },
+  {
+   "default": "A",
+   "fieldname": "store_grade",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Store Grade",
+   "options": "A\nB\nC\nD"
+  },
+  {
+   "fieldname": "section_break_compliance",
+   "fieldtype": "Section Break",
+   "label": "Compliance & Tax"
+  },
+  {
+   "fieldname": "drug_licence",
+   "fieldtype": "Link",
+   "label": "Drug Licence",
+   "options": "Drug Licence"
+  },
+  {
+   "fieldname": "column_break_compliance",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "gstin",
+   "fieldtype": "Data",
+   "label": "GSTIN"
+  },
+  {
+   "default": "1",
+   "fieldname": "disabled",
+   "fieldtype": "Check",
+   "label": "Disabled"
+  },
+  {
+   "fieldname": "section_break_pincodes",
+   "fieldtype": "Section Break",
+   "label": "Online Order Serviceability"
+  },
+  {
+   "fieldname": "pincodes_served",
+   "fieldtype": "Table",
+   "label": "Pincodes Served for Online Orders",
+   "options": "Pharmacy Store Pincode"
+  },
+  {
+   "fieldname": "section_break_approval",
+   "fieldtype": "Section Break",
+   "label": "Maker-Checker Approval"
+  },
+  {
+   "fieldname": "nir_maker",
+   "fieldtype": "Link",
+   "label": "Maker",
+   "options": "User",
+   "read_only": 1
+  },
+  {
+   "default": "Draft",
+   "fieldname": "nir_approval_status",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Approval Status",
+   "options": "\nDraft\nPending Approval\nApproved\nRejected"
+  },
+  {
+   "fieldname": "column_break_approval",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "nir_approved_by",
+   "fieldtype": "Link",
+   "label": "Approved By",
+   "options": "User",
+   "read_only": 1
+  },
+  {
+   "fieldname": "nir_approved_on",
+   "fieldtype": "Datetime",
+   "label": "Approved On",
+   "read_only": 1
+  },
+  {
+   "fieldname": "address",
+   "fieldtype": "Link",
+   "label": "Store Address",
+   "options": "Address",
+   "description": "Company address with this store's GSTIN; printed on its invoices and shown for store pickup"
+  },
+  {
+   "fieldname": "online_orders",
+   "fieldtype": "Check",
+   "label": "Takes Online Orders",
+   "default": "1"
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "links": [],
+ "modified": "2026-10-09 18:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "pharmacy",
+ "name": "Pharmacy Store",
+ "naming_rule": "By fieldname",
+ "autoname": "field:store_name",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Area Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Store Pharmacist",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}

@@ -1,0 +1,99 @@
+{
+ "actions": [],
+ "creation": "2026-10-08 16:30:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "item_code",
+  "item_name",
+  "batch_no",
+  "discrepancy_type",
+  "invoiced_qty",
+  "received_qty",
+  "discrepancy_qty",
+  "photo",
+  "remarks"
+ ],
+ "fields": [
+  {
+   "fieldname": "item_code",
+   "fieldtype": "Link",
+   "label": "Item",
+   "options": "Item",
+   "reqd": 1,
+   "in_list_view": 1,
+   "columns": 2
+  },
+  {
+   "fieldname": "item_name",
+   "fieldtype": "Data",
+   "label": "Item Name",
+   "fetch_from": "item_code.item_name",
+   "read_only": 1
+  },
+  {
+   "fieldname": "batch_no",
+   "fieldtype": "Link",
+   "label": "Batch",
+   "options": "Batch",
+   "in_list_view": 1,
+   "columns": 2
+  },
+  {
+   "fieldname": "discrepancy_type",
+   "fieldtype": "Select",
+   "label": "Type",
+   "options": "Damage\nShortage\nExcess",
+   "reqd": 1,
+   "in_list_view": 1,
+   "columns": 1
+  },
+  {
+   "fieldname": "invoiced_qty",
+   "fieldtype": "Float",
+   "label": "Invoiced Qty",
+   "in_list_view": 1,
+   "columns": 1
+  },
+  {
+   "fieldname": "received_qty",
+   "fieldtype": "Float",
+   "label": "Received Qty",
+   "in_list_view": 1,
+   "columns": 1
+  },
+  {
+   "fieldname": "discrepancy_qty",
+   "fieldtype": "Float",
+   "label": "Discrepancy Qty",
+   "reqd": 1,
+   "in_list_view": 1,
+   "columns": 1
+  },
+  {
+   "fieldname": "photo",
+   "fieldtype": "Attach Image",
+   "label": "Photo",
+   "in_list_view": 1,
+   "columns": 2
+  },
+  {
+   "fieldname": "remarks",
+   "fieldtype": "Small Text",
+   "label": "Remarks"
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "links": [],
+ "modified": "2026-10-08 16:30:00.000000",
+ "modified_by": "Administrator",
+ "module": "pharmacy",
+ "name": "Receipt Discrepancy Item",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "istable": 1,
+ "editable_grid": 1
+}

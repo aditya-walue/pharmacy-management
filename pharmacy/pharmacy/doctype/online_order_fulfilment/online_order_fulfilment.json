@@ -1,0 +1,79 @@
+{
+ "actions": [],
+ "creation": "2026-10-09 18:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "warehouse",
+  "pharmacy_store",
+  "sales_invoice",
+  "transfer_doctype",
+  "transfer_name",
+  "status"
+ ],
+ "fields": [
+  {
+   "fieldname": "warehouse",
+   "fieldtype": "Link",
+   "label": "Location",
+   "options": "Warehouse",
+   "reqd": 1,
+   "in_list_view": 1,
+   "columns": 2
+  },
+  {
+   "fieldname": "pharmacy_store",
+   "fieldtype": "Link",
+   "label": "Store",
+   "options": "Pharmacy Store",
+   "in_list_view": 1,
+   "columns": 2
+  },
+  {
+   "fieldname": "sales_invoice",
+   "fieldtype": "Link",
+   "label": "Invoice",
+   "options": "Sales Invoice",
+   "in_list_view": 1,
+   "columns": 2
+  },
+  {
+   "fieldname": "transfer_doctype",
+   "fieldtype": "Link",
+   "label": "Transfer Type",
+   "options": "DocType",
+   "read_only": 1
+  },
+  {
+   "fieldname": "transfer_name",
+   "fieldtype": "Dynamic Link",
+   "label": "Transfer",
+   "options": "transfer_doctype",
+   "read_only": 1,
+   "in_list_view": 1,
+   "columns": 2
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "Allocated\nAwaiting Transfer\nBilled\nOut for Delivery\nReady for Pickup\nDelivered\nCancelled",
+   "default": "Allocated",
+   "in_list_view": 1,
+   "columns": 1
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "links": [],
+ "modified": "2026-10-09 19:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "pharmacy",
+ "name": "Online Order Fulfilment",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "istable": 1,
+ "editable_grid": 1
+}

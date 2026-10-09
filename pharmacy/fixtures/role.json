@@ -1,0 +1,137 @@
+[
+ {
+  "doctype": "Role",
+  "name": "Category Manager",
+  "role_name": "Category Manager",
+  "desk_access": 1,
+  "is_custom": 0,
+  "two_factor_auth": 0,
+  "disabled": 0
+ },
+ {
+  "doctype": "Role",
+  "name": "Buyer",
+  "role_name": "Buyer",
+  "desk_access": 1,
+  "is_custom": 0,
+  "two_factor_auth": 0,
+  "disabled": 0
+ },
+ {
+  "doctype": "Role",
+  "name": "Warehouse Manager",
+  "role_name": "Warehouse Manager",
+  "desk_access": 1,
+  "is_custom": 0,
+  "two_factor_auth": 0,
+  "disabled": 0
+ },
+ {
+  "doctype": "Role",
+  "name": "Inward QC Executive",
+  "role_name": "Inward QC Executive",
+  "desk_access": 1,
+  "is_custom": 0,
+  "two_factor_auth": 0,
+  "disabled": 0
+ },
+ {
+  "doctype": "Role",
+  "name": "Picker Packer",
+  "role_name": "Picker Packer",
+  "desk_access": 1,
+  "is_custom": 0,
+  "two_factor_auth": 0,
+  "disabled": 0
+ },
+ {
+  "doctype": "Role",
+  "name": "Dispatch Coordinator",
+  "role_name": "Dispatch Coordinator",
+  "desk_access": 1,
+  "is_custom": 0,
+  "two_factor_auth": 0,
+  "disabled": 0
+ },
+ {
+  "doctype": "Role",
+  "name": "Delivery Rider",
+  "role_name": "Delivery Rider",
+  "desk_access": 1,
+  "is_custom": 0,
+  "two_factor_auth": 0,
+  "disabled": 0
+ },
+ {
+  "doctype": "Role",
+  "name": "Store Pharmacist",
+  "role_name": "Store Pharmacist",
+  "desk_access": 1,
+  "is_custom": 0,
+  "two_factor_auth": 0,
+  "disabled": 0
+ },
+ {
+  "doctype": "Role",
+  "name": "Online Order Pharmacist",
+  "role_name": "Online Order Pharmacist",
+  "desk_access": 1,
+  "is_custom": 0,
+  "two_factor_auth": 0,
+  "disabled": 0
+ },
+ {
+  "doctype": "Role",
+  "name": "E-commerce Manager",
+  "role_name": "E-commerce Manager",
+  "desk_access": 1,
+  "is_custom": 0,
+  "two_factor_auth": 0,
+  "disabled": 0
+ },
+ {
+  "doctype": "Role",
+  "name": "Customer Support",
+  "role_name": "Customer Support",
+  "desk_access": 1,
+  "is_custom": 0,
+  "two_factor_auth": 0,
+  "disabled": 0
+ },
+ {
+  "doctype": "Role",
+  "name": "Area Manager",
+  "role_name": "Area Manager",
+  "desk_access": 1,
+  "is_custom": 0,
+  "two_factor_auth": 0,
+  "disabled": 0
+ },
+ {
+  "doctype": "Role",
+  "name": "Pharmacy Accounts",
+  "role_name": "Pharmacy Accounts",
+  "desk_access": 1,
+  "is_custom": 0,
+  "two_factor_auth": 0,
+  "disabled": 0
+ },
+ {
+  "doctype": "Role",
+  "name": "Compliance Pharmacist",
+  "role_name": "Compliance Pharmacist",
+  "desk_access": 1,
+  "is_custom": 0,
+  "two_factor_auth": 0,
+  "disabled": 0
+ },
+ {
+  "doctype": "Role",
+  "name": "Pharmacy Management",
+  "role_name": "Pharmacy Management",
+  "desk_access": 1,
+  "is_custom": 0,
+  "two_factor_auth": 0,
+  "disabled": 0
+ }
+]

@@ -1,0 +1,166 @@
+{
+ "actions": [],
+ "allow_import": 1,
+ "autoname": "SCHEM-.YYYY.-.###",
+ "creation": "2026-10-08 00:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "supplier",
+  "scheme_name",
+  "is_active",
+  "cb_a",
+  "scheme_type",
+  "valid_from",
+  "valid_upto",
+  "scope_section",
+  "item_code",
+  "item_group",
+  "threshold_section",
+  "min_order_qty",
+  "min_order_value",
+  "benefit_section",
+  "discount_pct",
+  "free_goods_ratio",
+  "notes"
+ ],
+ "fields": [
+  {
+   "fieldname": "supplier",
+   "fieldtype": "Link",
+   "label": "Supplier",
+   "options": "Supplier",
+   "reqd": 1,
+   "in_list_view": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "scheme_name",
+   "fieldtype": "Data",
+   "label": "Scheme Name",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "is_active",
+   "fieldtype": "Check",
+   "label": "Active",
+   "default": "1",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "cb_a",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "scheme_type",
+   "fieldtype": "Select",
+   "label": "Scheme Type",
+   "options": "\nQuantity Discount\nFree Goods\nCash Discount",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "valid_from",
+   "fieldtype": "Date",
+   "label": "Valid From"
+  },
+  {
+   "fieldname": "valid_upto",
+   "fieldtype": "Date",
+   "label": "Valid Upto"
+  },
+  {
+   "fieldname": "scope_section",
+   "fieldtype": "Section Break",
+   "label": "Scope (leave blank = all items)"
+  },
+  {
+   "fieldname": "item_code",
+   "fieldtype": "Link",
+   "label": "Item",
+   "options": "Item",
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "item_group",
+   "fieldtype": "Link",
+   "label": "Item Group",
+   "options": "Item Group",
+   "description": "Applies to all items in this group if Item is blank."
+  },
+  {
+   "fieldname": "threshold_section",
+   "fieldtype": "Section Break",
+   "label": "Minimum Order Threshold"
+  },
+  {
+   "fieldname": "min_order_qty",
+   "fieldtype": "Float",
+   "label": "Min Order Qty",
+   "description": "Scheme applies only when ordered qty >= this value."
+  },
+  {
+   "fieldname": "min_order_value",
+   "fieldtype": "Currency",
+   "label": "Min Order Value (₹)",
+   "description": "Scheme applies only when order value >= this amount."
+  },
+  {
+   "fieldname": "benefit_section",
+   "fieldtype": "Section Break",
+   "label": "Benefit"
+  },
+  {
+   "fieldname": "discount_pct",
+   "fieldtype": "Percent",
+   "label": "Discount %",
+   "depends_on": "eval:['Quantity Discount','Cash Discount'].includes(doc.scheme_type)"
+  },
+  {
+   "fieldname": "free_goods_ratio",
+   "fieldtype": "Float",
+   "label": "Free Goods Ratio",
+   "description": "E.g. 0.1 = buy 10 get 1 free. Effective free units = floor(qty × ratio).",
+   "depends_on": "eval:doc.scheme_type=='Free Goods'"
+  },
+  {
+   "fieldname": "notes",
+   "fieldtype": "Small Text",
+   "label": "Notes"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-10-08 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Pharmacy",
+ "name": "Supplier Scheme",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Buyer",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Pharmacy Management",
+   "share": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}

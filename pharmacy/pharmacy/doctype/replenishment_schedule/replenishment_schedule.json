@@ -1,0 +1,233 @@
+ {
+  "actions": [],
+  "creation": "2026-10-08 12:00:00.000000",
+  "doctype": "DocType",
+  "engine": "InnoDB",
+  "field_order": [
+   "schedule_name",
+   "scope",
+   "cluster",
+   "store",
+   "column_break_scope",
+   "applies_to",
+   "item",
+   "item_group",
+   "abc_class",
+   "section_break_schedule",
+   "frequency",
+   "order_days",
+   "column_break_qty",
+   "reorder_level",
+   "reorder_qty",
+   "disabled",
+   "section_break_approval",
+   "nir_maker",
+   "nir_approval_status",
+   "column_break_approval",
+   "nir_approved_by",
+   "nir_approved_on"
+  ],
+  "fields": [
+   {
+    "fieldname": "schedule_name",
+    "fieldtype": "Data",
+    "in_list_view": 1,
+    "label": "Schedule Name",
+    "reqd": 1
+   },
+   {
+    "default": "All Stores",
+    "fieldname": "scope",
+    "fieldtype": "Select",
+    "in_list_view": 1,
+    "label": "Scope",
+    "options": "All Stores\nCluster\nStore",
+    "reqd": 1
+   },
+   {
+    "depends_on": "eval:doc.scope=='Cluster'",
+    "fieldname": "cluster",
+    "fieldtype": "Link",
+    "label": "Cluster",
+    "options": "Cluster"
+   },
+   {
+    "depends_on": "eval:doc.scope=='Store'",
+    "fieldname": "store",
+    "fieldtype": "Link",
+    "label": "Store",
+    "options": "Pharmacy Store"
+   },
+   {
+    "fieldname": "column_break_scope",
+    "fieldtype": "Column Break"
+   },
+   {
+    "default": "Item",
+    "fieldname": "applies_to",
+    "fieldtype": "Select",
+    "in_list_view": 1,
+    "label": "Applies To",
+    "options": "Item\nItem Group\nABC Class\nGlobal",
+    "reqd": 1
+   },
+   {
+    "depends_on": "eval:doc.applies_to=='Item'",
+    "fieldname": "item",
+    "fieldtype": "Link",
+    "in_list_view": 1,
+    "in_standard_filter": 1,
+    "label": "Item",
+    "options": "Item"
+   },
+   {
+    "depends_on": "eval:doc.applies_to=='Item Group'",
+    "fieldname": "item_group",
+    "fieldtype": "Link",
+    "label": "Item Group",
+    "options": "Item Group"
+   },
+   {
+    "depends_on": "eval:doc.applies_to=='ABC Class'",
+    "fieldname": "abc_class",
+    "fieldtype": "Select",
+    "label": "ABC Class",
+    "options": "\nA\nB\nC"
+   },
+   {
+    "fieldname": "section_break_schedule",
+    "fieldtype": "Section Break",
+    "label": "Frequency & Ordering"
+   },
+   {
+    "default": "Daily",
+    "fieldname": "frequency",
+    "fieldtype": "Select",
+    "in_list_view": 1,
+    "label": "Frequency",
+    "options": "Daily\nAlternate Days\nTwice a Week\nWeekly\nFortnightly"
+   },
+   {
+    "default": "Daily",
+    "fieldname": "order_days",
+    "fieldtype": "Data",
+    "label": "Order Days",
+    "description": "e.g. Daily, Monday & Thursday, Alternate Days, Every Tuesday"
+   },
+   {
+    "fieldname": "column_break_qty",
+    "fieldtype": "Column Break"
+   },
+   {
+    "default": "10",
+    "fieldname": "reorder_level",
+    "fieldtype": "Float",
+    "label": "Reorder Level",
+    "non_negative": 1,
+    "reqd": 1
+   },
+   {
+    "default": "50",
+    "fieldname": "reorder_qty",
+    "fieldtype": "Float",
+    "label": "Reorder Quantity",
+    "non_negative": 1,
+    "reqd": 1
+   },
+   {
+    "default": "0",
+    "fieldname": "disabled",
+    "fieldtype": "Check",
+    "label": "Disabled"
+   },
+   {
+    "fieldname": "section_break_approval",
+    "fieldtype": "Section Break",
+    "label": "Maker-Checker Approval"
+   },
+   {
+    "fieldname": "nir_maker",
+    "fieldtype": "Link",
+    "label": "Maker",
+    "options": "User",
+    "read_only": 1
+   },
+   {
+    "default": "Draft",
+    "fieldname": "nir_approval_status",
+    "fieldtype": "Select",
+    "in_list_view": 1,
+    "in_standard_filter": 1,
+    "label": "Approval Status",
+    "options": "\nDraft\nPending Approval\nApproved\nRejected"
+   },
+   {
+    "fieldname": "column_break_approval",
+    "fieldtype": "Column Break"
+   },
+   {
+    "fieldname": "nir_approved_by",
+    "fieldtype": "Link",
+    "label": "Approved By",
+    "options": "User",
+    "read_only": 1
+   },
+   {
+    "fieldname": "nir_approved_on",
+    "fieldtype": "Datetime",
+    "label": "Approved On",
+    "read_only": 1
+   }
+  ],
+ "index_web_pages_for_search": 0,
+ "links": [],
+ "modified": "2026-10-08 12:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "pharmacy",
+ "name": "Replenishment Schedule",
+ "naming_rule": "By fieldname",
+ "autoname": "field:schedule_name",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Warehouse Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Buyer",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}

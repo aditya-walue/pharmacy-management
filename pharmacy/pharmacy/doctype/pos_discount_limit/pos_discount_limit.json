@@ -1,0 +1,94 @@
+{
+ "actions": [],
+ "creation": "2026-10-09 16:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "role",
+  "max_discount_pct",
+  "can_approve_overrides"
+ ],
+ "fields": [
+  {
+   "fieldname": "role",
+   "fieldtype": "Link",
+   "label": "Role",
+   "options": "Role",
+   "reqd": 1,
+   "unique": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "max_discount_pct",
+   "fieldtype": "Percent",
+   "label": "Max Manual Discount %",
+   "reqd": 1,
+   "in_list_view": 1,
+   "description": "On top of automatic Pricing Rule discounts"
+  },
+  {
+   "fieldname": "can_approve_overrides",
+   "fieldtype": "Check",
+   "label": "Can Approve Discounts above Others' Limits",
+   "in_list_view": 1,
+   "description": "Up to this role's own limit"
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "links": [],
+ "modified": "2026-10-09 16:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "pharmacy",
+ "name": "POS Discount Limit",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "read": 1,
+   "report": 1,
+   "export": 1,
+   "print": 1,
+   "email": 1,
+   "share": 1,
+   "create": 1,
+   "write": 1,
+   "delete": 1,
+   "role": "System Manager"
+  },
+  {
+   "read": 1,
+   "report": 1,
+   "export": 1,
+   "print": 1,
+   "email": 1,
+   "share": 1,
+   "create": 1,
+   "write": 1,
+   "delete": 1,
+   "role": "Pharmacy Management"
+  },
+  {
+   "read": 1,
+   "report": 1,
+   "export": 1,
+   "print": 1,
+   "email": 1,
+   "share": 1,
+   "role": "Store Pharmacist"
+  },
+  {
+   "read": 1,
+   "report": 1,
+   "export": 1,
+   "print": 1,
+   "email": 1,
+   "share": 1,
+   "role": "Area Manager"
+  }
+ ],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "autoname": "field:role",
+ "naming_rule": "By fieldname",
+ "track_changes": 1
+}

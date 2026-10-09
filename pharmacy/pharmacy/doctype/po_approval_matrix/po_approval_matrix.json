@@ -1,0 +1,186 @@
+{
+ "actions": [],
+ "creation": "2026-10-08 15:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "company",
+  "warehouse",
+  "applies_to",
+  "regulatory_category",
+  "item_group",
+  "disabled",
+  "column_break_value",
+  "from_value",
+  "to_value",
+  "approval_level",
+  "approver_role"
+ ],
+ "fields": [
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "Company",
+   "options": "Company",
+   "reqd": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "warehouse",
+   "fieldtype": "Link",
+   "label": "Warehouse",
+   "options": "Warehouse",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "description": "Leave blank to apply to every warehouse. A group warehouse covers everything under it."
+  },
+  {
+   "fieldname": "applies_to",
+   "fieldtype": "Select",
+   "label": "Applies To",
+   "options": "All Items\nRegulatory Category\nItem Group",
+   "default": "All Items",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "regulatory_category",
+   "fieldtype": "Select",
+   "label": "Regulatory Category",
+   "options": "\nOTC\nSchedule H\nSchedule H1\nSchedule X\nNDPS\nCosmetic\nFSSAI",
+   "depends_on": "eval:doc.applies_to=='Regulatory Category'",
+   "mandatory_depends_on": "eval:doc.applies_to=='Regulatory Category'",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "item_group",
+   "fieldtype": "Link",
+   "label": "Item Group",
+   "options": "Item Group",
+   "depends_on": "eval:doc.applies_to=='Item Group'",
+   "mandatory_depends_on": "eval:doc.applies_to=='Item Group'",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "disabled",
+   "fieldtype": "Check",
+   "label": "Disabled",
+   "default": "0"
+  },
+  {
+   "fieldname": "column_break_value",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "from_value",
+   "fieldtype": "Currency",
+   "label": "From Value",
+   "default": "0",
+   "non_negative": 1,
+   "in_list_view": 1,
+   "description": "Net value (company currency) of the PO, or of its lines in this category"
+  },
+  {
+   "fieldname": "to_value",
+   "fieldtype": "Currency",
+   "label": "To Value",
+   "non_negative": 1,
+   "in_list_view": 1,
+   "description": "0 means no upper limit"
+  },
+  {
+   "fieldname": "approval_level",
+   "fieldtype": "Int",
+   "label": "Approval Level",
+   "reqd": 1,
+   "default": "1",
+   "non_negative": 1,
+   "in_list_view": 1,
+   "description": "Levels are approved in order, lowest first"
+  },
+  {
+   "fieldname": "approver_role",
+   "fieldtype": "Link",
+   "label": "Approver Role",
+   "options": "Role",
+   "reqd": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "links": [],
+ "modified": "2026-10-08 15:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "pharmacy",
+ "name": "PO Approval Matrix",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "read": 1,
+   "report": 1,
+   "export": 1,
+   "print": 1,
+   "email": 1,
+   "share": 1,
+   "create": 1,
+   "write": 1,
+   "delete": 1,
+   "role": "System Manager"
+  },
+  {
+   "read": 1,
+   "report": 1,
+   "export": 1,
+   "print": 1,
+   "email": 1,
+   "share": 1,
+   "create": 1,
+   "write": 1,
+   "delete": 1,
+   "role": "Category Manager"
+  },
+  {
+   "read": 1,
+   "report": 1,
+   "export": 1,
+   "print": 1,
+   "email": 1,
+   "share": 1,
+   "role": "Buyer"
+  },
+  {
+   "read": 1,
+   "report": 1,
+   "export": 1,
+   "print": 1,
+   "email": 1,
+   "share": 1,
+   "role": "Pharmacy Accounts"
+  },
+  {
+   "read": 1,
+   "report": 1,
+   "export": 1,
+   "print": 1,
+   "email": 1,
+   "share": 1,
+   "role": "Pharmacy Management"
+  },
+  {
+   "read": 1,
+   "report": 1,
+   "export": 1,
+   "print": 1,
+   "email": 1,
+   "share": 1,
+   "role": "Area Manager"
+  }
+ ],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "autoname": "format:POAM-{#####}",
+ "naming_rule": "Expression",
+ "track_changes": 1
+}
