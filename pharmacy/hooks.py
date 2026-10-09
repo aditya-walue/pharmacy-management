@@ -8,12 +8,15 @@ app_license = "mit"
 # Apps
 # ------------------
 
-required_apps = ["erpnext", "india_compliance"]
+# builder: website pages (fixtures below); payments: Razorpay
+required_apps = ["erpnext", "india_compliance", "payments", "builder"]
 
 # Fixtures
 # ------------------
 
 fixtures = [
+	# website pages built in Frappe Builder live in the database; shipped here so migrate recreates them
+	{"dt": "Builder Page", "filters": [["route", "in", ["order", "cart", "orders"]]]},
 	{
 		"dt": "Role",
 		"filters": [
