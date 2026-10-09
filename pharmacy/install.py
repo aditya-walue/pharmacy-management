@@ -1732,6 +1732,14 @@ CUSTOM_FIELDS = {
 			"insert_after": "nir_match_rate_tolerance",
 			"non_negative": 1,
 		},
+		{
+			"fieldname": "nir_po_single_approver_role",
+			"fieldtype": "Link",
+			"label": "Single PO Approver Role",
+			"options": "Role",
+			"insert_after": "nir_match_qty_tolerance",
+			"description": "When set, every Purchase Order needs exactly one approval, by this role, whatever its value or category. Clear it to use the PO Approval Matrix again.",
+		},
 	],
 	"Purchase Invoice": [
 		{

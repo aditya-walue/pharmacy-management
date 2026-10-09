@@ -72,6 +72,9 @@ def get_required_approvals(doc):
 		order_by="approval_level asc, from_value asc",
 	)
 	lines = get_line_values(doc)
+	single_role = frappe.db.get_single_value("Buying Settings", "nir_po_single_approver_role")
+	if single_role:
+		return [single_approval(doc, single_role, lines)]
 	required = {}
 
 	if variance_items := get_variance_items(doc):
@@ -104,6 +107,17 @@ def get_required_approvals(doc):
 		)
 
 	return sorted(required.values(), key=lambda r: (r["approval_level"], r["approver_role"]))
+
+
+def single_approval(doc, role, lines):
+	"""One approval for the whole PO; the basis still says what the approver should look at."""
+	reasons = [_("PO value {0}").format(frappe.format(sum(line.value for line in lines), "Currency"))]
+	categories = sorted({line.category for line in lines if line.category in ("Schedule X", "NDPS", "Schedule H1")})
+	if categories:
+		reasons.append(_("contains {0}").format(", ".join(categories)))
+	if variance_items := get_variance_items(doc):
+		reasons.append(_("above contract rate: {0}").format(", ".join(sorted(set(variance_items)))))
+	return {"approval_level": 1, "approver_role": role, "basis": "; ".join(reasons), "rule": None}
 
 
 def get_line_values(doc):
