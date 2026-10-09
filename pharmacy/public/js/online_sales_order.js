@@ -11,13 +11,8 @@ frappe.ui.form.on("Sales Order", {
 		frm.dashboard.set_headline(__("Online order: {0} · {1} · Payment {2}", [__(status), __(frm.doc.nir_fulfilment_type),
 			__(frm.doc.nir_payment_status || "")]), colour);
 
-		if (status === "Prescription Review") {
-			if (frm.doc.nir_prescription) {
-				frm.add_custom_button(__("View Prescription"), () => window.open(frm.doc.nir_prescription), __("Prescription"));
-			}
-			frm.add_custom_button(__("Approve"), () => approve(frm), __("Prescription"));
-			frm.add_custom_button(__("Reject"), () => reject(frm), __("Prescription"));
-			frm.page.set_inner_btn_group_as_primary(__("Prescription"));
+		if (frm.doc.nir_prescription) {
+			frm.add_custom_button(__("View Prescription"), () => window.open(frm.doc.nir_prescription), __("Prescription"));
 		}
 
 		(frm.doc.nir_fulfilments || []).forEach((row) => {

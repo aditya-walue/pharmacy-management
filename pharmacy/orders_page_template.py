@@ -74,7 +74,6 @@ def get_orders_html() -> str:
       <button class="ph-tab-btn active" onclick="setFilter('all')">All Orders (<span id="count-all">0</span>)</button>
       <button class="ph-tab-btn" onclick="setFilter('Confirmed')">Confirmed (<span id="count-confirmed">0</span>)</button>
       <button class="ph-tab-btn" onclick="setFilter('Awaiting Payment')">Awaiting Payment (<span id="count-awaiting">0</span>)</button>
-      <button class="ph-tab-btn" onclick="setFilter('Prescription Review')">Rx Review (<span id="count-rx">0</span>)</button>
       <button class="ph-tab-btn" onclick="setFilter('Dispatched')">Dispatched (<span id="count-dispatched">0</span>)</button>
       <button class="ph-tab-btn" onclick="setFilter('Delivered')">Delivered (<span id="count-delivered">0</span>)</button>
     </div>
@@ -482,7 +481,6 @@ def get_orders_html() -> str:
   }
   .ph-status-pill.confirmed { background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; }
   .ph-status-pill.awaiting-payment { background: #fef3c7; color: #b45309; border: 1px solid #fde68a; }
-  .ph-status-pill.prescription-review { background: #e0e7ff; color: #4338ca; border: 1px solid #c7d2fe; }
   .ph-status-pill.dispatched { background: #f3e8ff; color: #7e22ce; border: 1px solid #e9d5ff; }
   .ph-status-pill.delivered { background: #ccfbf1; color: #0f766e; border: 1px solid #99f6e4; }
 
@@ -819,7 +817,6 @@ def get_orders_html() -> str:
     document.getElementById('count-all').innerText = allOrders.length;
     document.getElementById('count-confirmed').innerText = allOrders.filter(o => o.nir_online_status === 'Confirmed').length;
     document.getElementById('count-awaiting').innerText = allOrders.filter(o => o.nir_online_status === 'Awaiting Payment').length;
-    document.getElementById('count-rx').innerText = allOrders.filter(o => o.nir_online_status === 'Prescription Review').length;
     document.getElementById('count-dispatched').innerText = allOrders.filter(o => o.nir_online_status === 'Dispatched').length;
     document.getElementById('count-delivered').innerText = allOrders.filter(o => o.nir_online_status === 'Delivered').length;
   }
@@ -833,9 +830,8 @@ def get_orders_html() -> str:
     if (status === 'all') tabs[0].classList.add('active');
     else if (status === 'Confirmed') tabs[1].classList.add('active');
     else if (status === 'Awaiting Payment') tabs[2].classList.add('active');
-    else if (status === 'Prescription Review') tabs[3].classList.add('active');
-    else if (status === 'Dispatched') tabs[4].classList.add('active');
-    else if (status === 'Delivered') tabs[5].classList.add('active');
+    else if (status === 'Dispatched') tabs[3].classList.add('active');
+    else if (status === 'Delivered') tabs[4].classList.add('active');
 
     renderOrders();
   }
@@ -925,7 +921,7 @@ def get_orders_html() -> str:
               ${it.storage_condition && it.storage_condition.includes('2-8') ? `<span class="ph-mini-tag cold">❄️ 2-8°C Cold Chain</span>` : ''}
             </div>
           </td>
-          <td style="font-weight: 700; text-align: center;">${it.qty} ${it.uom || 'Unit'}</td>
+          <td style="font-weight: 700; text-align: center;">${(it.qty % 1 === 0) ? Math.round(it.qty) : (it.qty < 1 ? 1 : Math.round(it.qty))} ${it.uom || 'Unit'}</td>
           <td style="color: #64748b;">₹${it.rate.toFixed(2)}</td>
           <td style="font-weight: 800; color: #0f172a; text-align: right;">₹${it.amount.toFixed(2)}</td>
         </tr>
@@ -1074,7 +1070,7 @@ def get_orders_html() -> str:
               <div style="font-size: 11px; color: #64748b;">Code: ${it.item_code}</div>
             </td>
             <td style="padding: 8px 10px; border-bottom: 1px solid #e2e8f0; font-family: monospace;">${it.batch_no || '-'}</td>
-            <td style="padding: 8px 10px; border-bottom: 1px solid #e2e8f0; text-align: center;">${it.qty} ${it.uom}</td>
+            <td style="padding: 8px 10px; border-bottom: 1px solid #e2e8f0; text-align: center;">${(it.qty % 1 === 0) ? Math.round(it.qty) : (it.qty < 1 ? 1 : Math.round(it.qty))} ${it.uom || 'Unit'}</td>
             <td style="padding: 8px 10px; border-bottom: 1px solid #e2e8f0; text-align: right;">₹${it.rate.toFixed(2)}</td>
             <td style="padding: 8px 10px; border-bottom: 1px solid #e2e8f0; text-align: right; font-weight: 700;">₹${it.amount.toFixed(2)}</td>
           </tr>

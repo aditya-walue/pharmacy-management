@@ -1433,7 +1433,7 @@ CUSTOM_FIELDS = {
 			"fieldtype": "Select",
 			"label": "Online Status",
 			"insert_after": "nir_online_tab",
-			"options": "\nCart\nPrescription Review\nAwaiting Payment\nConfirmed\nPartly Dispatched\nDispatched\nDelivered\nCancelled\nRejected",
+			"options": "\nCart\nPrescription Review\nAwaiting Payment\nConfirmed\nPicking\nPacked\nPartly Dispatched\nDispatched\nDelivered\nCancelled\nRejected",
 			"read_only": 1,
 			"no_copy": 1,
 			"in_standard_filter": 1,
@@ -2105,6 +2105,44 @@ CUSTOM_FIELDS = {
 			"no_copy": 1,
 		},
 	],
+	"Pick List": [
+		{
+			"fieldname": "nir_pack_section",
+			"fieldtype": "Section Break",
+			"label": "Packing (online orders)",
+			"insert_after": "purpose",
+		},
+		{
+			"fieldname": "nir_package_label",
+			"fieldtype": "Data",
+			"label": "Bag / Box Label",
+			"insert_after": "nir_pack_section",
+			"description": "Scan or type the label on the sealed bag / box; required to submit an online-order pick",
+			"no_copy": 1,
+		},
+		{
+			"fieldname": "nir_pack_column",
+			"fieldtype": "Column Break",
+			"insert_after": "nir_package_label",
+		},
+		{
+			"fieldname": "nir_packed_by",
+			"fieldtype": "Link",
+			"label": "Packed By",
+			"options": "User",
+			"insert_after": "nir_pack_column",
+			"read_only": 1,
+			"no_copy": 1,
+		},
+		{
+			"fieldname": "nir_packed_on",
+			"fieldtype": "Datetime",
+			"label": "Packed On",
+			"insert_after": "nir_packed_by",
+			"read_only": 1,
+			"no_copy": 1,
+		},
+	],
 }
 
 
@@ -2130,6 +2168,12 @@ def setup():
 		if frappe.db.exists("Custom Field", name):
 			frappe.delete_doc("Custom Field", name, ignore_permissions=True)
 	create_custom_fields(CUSTOM_FIELDS, update=True)
+	from pharmacy.overrides.rider import setup_rider_permissions
+
+	setup_rider_permissions()
+	from pharmacy.online.picking import setup_picker_permissions
+
+	setup_picker_permissions()
 	create_uoms()
 	enable_track_changes()
 	sync_non_sellable()

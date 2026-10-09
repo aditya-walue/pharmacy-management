@@ -28,7 +28,8 @@ def setup():
 			"nir_regulatory_category as category",
 			"nir_storage_condition as storage_condition",
 			"nir_rx_required as rx_required",
-			"stock_uom as uom",
+			"stock_uom",
+			"sales_uom",
 			"valuation_rate as rate",
 		],
 		order_by="item_name asc",
@@ -39,7 +40,11 @@ def setup():
 		if m["item_code"].startswith("138-CMS") or m["item_code"] == "dolo650":
 			continue
 
-		price = frappe.db.get_value("Item Price", {"item_code": m["item_code"], "selling": 1}, "price_list_rate")
+		m["uom"] = m.get("sales_uom") or m.get("stock_uom") or "Unit"
+
+		price = frappe.db.get_value("Item Price", {"item_code": m["item_code"], "uom": m["uom"], "selling": 1}, "price_list_rate")
+		if not price:
+			price = frappe.db.get_value("Item Price", {"item_code": m["item_code"], "selling": 1}, "price_list_rate")
 		if not price:
 			price = frappe.db.get_value("Item Price", {"item_code": m["item_code"]}, "price_list_rate")
 		if price and flt(price) > 0:
@@ -511,7 +516,7 @@ def setup():
 
     const isCold = it.storage_condition === '2-8C';
     const coldTag = isCold ? '<span class="ph-badge-tag cold">❄️ 2-8°C</span>' : '';
-    const uomStr = it.dosage_form || it.uom || 'Unit';
+    const uomStr = it.uom || it.dosage_form || 'Unit';
 
     const inCartItem = cart.find(c => c.item_code === it.item_code);
     const cartQty = inCartItem ? inCartItem.qty : 0;
@@ -637,7 +642,7 @@ def setup():
             <div class="ph-tbl-med-salt">${{it.generic_name ? it.generic_name + ' &bull; ' : ''}}${{it.strength || ''}}</div>
           </td>
           <td>
-            <strong>${{it.dosage_form || it.uom || 'Unit'}}</strong>
+            <strong>${{it.uom || it.dosage_form || 'Unit'}}</strong>
           </td>
           <td>
             <span class="ph-badge-tag ${{it.rx_required ? 'rx' : 'otc'}}">${{it.rx_required ? 'Rx' : 'OTC'}}</span>
@@ -685,7 +690,7 @@ def setup():
     if (existing) {{
       existing.qty += 1;
     }} else {{
-      cart.push({{ ...item, qty: 1 }});
+      cart.push({{ ...item, qty: 1, uom: item.uom || 'Unit' }});
     }}
     saveCart();
     updateCartUI();
@@ -856,9 +861,55 @@ def setup():
               </select>
             </div>
 
-            <div class="ph-form-group" id="pincode-group">
-              <label>Delivery Pincode *</label>
-              <input type="text" id="cust-pincode" placeholder="e.g. 400050" />
+            <div id="pincode-group">
+              <div class="ph-form-row">
+                <div class="ph-form-group">
+                  <label>Address Title</label>
+                  <input type="text" id="addr-title" placeholder="e.g. Home, Office" />
+                </div>
+                <div class="ph-form-group">
+                  <label>Address Type</label>
+                  <select id="addr-type">
+                    <option value="Shipping">Shipping</option>
+                    <option value="Billing">Billing</option>
+                  </select>
+                </div>
+              </div>
+              <div class="ph-form-group">
+                <label>Address Line 1 *</label>
+                <input type="text" id="addr-line1" placeholder="Flat / house no., building" maxlength="140" />
+              </div>
+              <div class="ph-form-group">
+                <label>Address Line 2</label>
+                <input type="text" id="addr-line2" placeholder="Street, area, landmark" maxlength="140" />
+              </div>
+              <div class="ph-form-row">
+                <div class="ph-form-group">
+                  <label>Postal Code *</label>
+                  <input type="text" id="cust-pincode" placeholder="e.g. 400050" maxlength="6" inputmode="numeric" onblur="fillFromPincode()" />
+                  <small id="pincode-msg" style="display:block; margin-top:4px; font-size:11px;"></small>
+                </div>
+                <div class="ph-form-group">
+                  <label>City *</label>
+                  <input type="text" id="addr-city" />
+                </div>
+              </div>
+              <div class="ph-form-row">
+                <div class="ph-form-group">
+                  <label>State *</label>
+                  <select id="addr-state">
+                    <option value="">-- Select State --</option>
+                  </select>
+                </div>
+                <div class="ph-form-group">
+                  <label>GSTIN / UIN (business purchases)</label>
+                  <input type="text" id="addr-gstin" maxlength="15" placeholder="Optional" style="text-transform: uppercase;" />
+                </div>
+              </div>
+              <div class="ph-checkbox-box">
+                <input type="checkbox" id="addr-primary" checked />
+                <label for="addr-primary"><strong>Save as my preferred address</strong></label>
+              </div>
             </div>
 
             <!-- Patient Special Order Toggle -->
@@ -1065,6 +1116,7 @@ def setup():
   let currentFulfillment = 'Home Delivery';
   let currentPaymentMethod = 'Razorpay';
   let uploadedFileName = '';
+  let rxFile = null;
 
   // Load cart from localStorage
   try {{
@@ -1075,6 +1127,23 @@ def setup():
   function initCartPage() {{
     renderCartView();
     populateStores();
+    populateStates();
+  }}
+
+  function populateStates() {{
+    const sel = document.getElementById('addr-state');
+    if (!sel) return;
+    fetch('/api/method/pharmacy.online.portal.get_states')
+      .then(r => r.json())
+      .then(res => {{
+        (res.message || []).forEach(state => {{
+          const opt = document.createElement('option');
+          opt.value = state;
+          opt.innerText = state;
+          sel.appendChild(opt);
+        }});
+      }})
+      .catch(() => {{}});
   }}
 
   function populateStores() {{
@@ -1116,7 +1185,7 @@ def setup():
         <tr>
           <td>
             <div class="ph-c-med-name">${{it.item_name}}</div>
-            <div class="ph-c-med-salt">🧪 ${{it.generic_name || 'Standard formula'}} &bull; ${{it.dosage_form || 'Form'}} (${{it.strength || ''}})</div>
+            <div class="ph-c-med-salt">🧪 ${{it.generic_name || 'Standard formula'}} &bull; ${{it.dosage_form || 'Form'}} (${{it.strength || ''}}) &bull; Unit: <strong>${{it.uom || 'Unit'}}</strong></div>
           </td>
           <td style="font-weight: 700; color: #0f172a;">
             ₹${{parseFloat(it.rate).toFixed(2)}}
@@ -1198,6 +1267,22 @@ def setup():
     }}
   }}
 
+  function fillFromPincode() {{
+    const pin = document.getElementById('cust-pincode').value.trim();
+    const msg = document.getElementById('pincode-msg');
+    if (!/^[0-9]{{6}}$/.test(pin)) {{ msg.innerText = ''; return; }}
+    fetch('/api/method/pharmacy.online.portal.get_pincode_details?pincode=' + encodeURIComponent(pin))
+      .then(r => r.json())
+      .then(res => {{
+        const d = res.message || {{}};
+        if (d.city && !document.getElementById('addr-city').value) document.getElementById('addr-city').value = d.city;
+        if (d.state && !document.getElementById('addr-state').value) document.getElementById('addr-state').value = d.state;
+        msg.style.color = d.serviceable ? '#047857' : '#b91c1c';
+        msg.innerText = d.message || '';
+      }})
+      .catch(() => {{ msg.innerText = ''; }});
+  }}
+
   function setPaymentMethod(method) {{
     currentPaymentMethod = method;
     const rzp = document.getElementById('pay-opt-razorpay');
@@ -1229,10 +1314,47 @@ def setup():
 
   function handleRxFileSelect(e) {{
     const file = e.target.files[0];
-    if (file) {{
-      uploadedFileName = file.name;
-      document.getElementById('rx-file-text').innerHTML = `✅ Attached: <strong>${{file.name}}</strong>`;
+    if (!file) return;
+    const ext = (file.name.split('.').pop() || '').toLowerCase();
+    if (!['pdf', 'jpg', 'jpeg', 'png'].includes(ext)) {{
+      alert('Upload the prescription as a PDF, JPG or PNG.');
+      e.target.value = '';
+      return;
     }}
+    if (file.size > 5 * 1024 * 1024) {{
+      alert('The prescription file must be 5 MB or smaller.');
+      e.target.value = '';
+      return;
+    }}
+    rxFile = file;
+    uploadedFileName = file.name;
+    document.getElementById('rx-file-text').innerHTML = `✅ Attached: <strong>${{file.name}}</strong>`;
+  }}
+
+  function uploadPrescription() {{
+    // the file goes up first; the order then carries its private link
+    if (!rxFile) return Promise.resolve('');
+    const form = new FormData();
+    form.append('file', rxFile, rxFile.name);
+    return fetch('/api/method/pharmacy.online.portal.upload_prescription', {{
+      method: 'POST',
+      headers: {{ 'X-Frappe-CSRF-Token': (window.frappe && frappe.csrf_token) || '' }},
+      body: form
+    }})
+      .then(r => r.json())
+      .then(res => {{
+        if (!res.message || !res.message.file_url) {{
+          throw new Error(serverMessage(res) || 'Prescription upload failed.');
+        }}
+        return res.message.file_url;
+      }});
+  }}
+
+  function serverMessage(res) {{
+    try {{
+      const msgs = JSON.parse(res._server_messages || '[]');
+      return msgs.map(m => JSON.parse(m).message).join(' ');
+    }} catch (e) {{ return ''; }}
   }}
 
   function submitOrder() {{
@@ -1253,6 +1375,26 @@ def setup():
     if (!phone.trim()) {{ alert('Please enter contact mobile number.'); return; }}
     if (!email.trim() || !email.includes('@')) {{ alert('Please enter a valid email address for order updates.'); return; }}
 
+    let address = null;
+    if (currentFulfillment === 'Home Delivery') {{
+      address = {{
+        address_title: document.getElementById('addr-title').value.trim() || name.trim(),
+        address_type: document.getElementById('addr-type').value,
+        address_line1: document.getElementById('addr-line1').value.trim(),
+        address_line2: document.getElementById('addr-line2').value.trim(),
+        city: document.getElementById('addr-city').value.trim(),
+        state: document.getElementById('addr-state').value.trim(),
+        pincode: pincode.trim(),
+        gstin: document.getElementById('addr-gstin').value.trim().toUpperCase(),
+        is_primary_address: document.getElementById('addr-primary').checked ? 1 : 0,
+        phone: phone.trim()
+      }};
+      if (!address.address_line1) {{ alert('Please enter Address Line 1.'); return; }}
+      if (!/^[0-9]{{6}}$/.test(address.pincode)) {{ alert('Please enter a 6-digit postal code.'); return; }}
+      if (!address.city || !address.state) {{ alert('Please enter city and state.'); return; }}
+      if (address.gstin && address.gstin.length !== 15) {{ alert('GSTIN must be 15 characters.'); return; }}
+    }}
+
     const btn = document.getElementById('checkout-action-btn');
     btn.disabled = true;
     btn.innerHTML = '<span>Processing Order...</span>';
@@ -1263,21 +1405,26 @@ def setup():
       email: email,
       fulfillment_type: currentFulfillment,
       pincode: pincode,
+      address: address ? JSON.stringify(address) : '',
       store: store,
       payment_method: currentPaymentMethod,
       is_patient_special_order: isSpecial,
       patient_notes: notes,
-      prescription_file: uploadedFileName || '',
-      items: JSON.stringify(cart.map(c => ({{ item_code: c.item_code, qty: c.qty, rate: c.rate }})))
+      prescription_file: '',
+      items: JSON.stringify(cart.map(c => ({{ item_code: c.item_code, qty: c.qty, rate: c.rate, uom: c.uom || 'Unit' }})))
     }};
 
-    fetch('/api/method/pharmacy.online.portal.submit_online_order', {{
-      method: 'POST',
-      headers: {{
-        'Content-Type': 'application/json',
-        'X-Frappe-CSRF-Token': (window.frappe && frappe.csrf_token) || ''
-      }},
-      body: JSON.stringify(payload)
+    uploadPrescription()
+    .then(fileUrl => {{
+      payload.prescription_file = fileUrl;
+      return fetch('/api/method/pharmacy.online.portal.submit_online_order', {{
+        method: 'POST',
+        headers: {{
+          'Content-Type': 'application/json',
+          'X-Frappe-CSRF-Token': (window.frappe && frappe.csrf_token) || ''
+        }},
+        body: JSON.stringify(payload)
+      }});
     }})
     .then(r => r.json())
     .then(res => {{
@@ -1293,14 +1440,14 @@ def setup():
       }} else {{
         btn.disabled = false;
         updateButtonText(cart.reduce((s, i) => s + (i.qty * parseFloat(i.rate)), 0));
-        alert(res.exc || 'Failed to place order.');
+        alert(serverMessage(res) || res.exc || 'Failed to place order.');
       }}
     }})
     .catch(err => {{
       btn.disabled = false;
       updateButtonText(cart.reduce((s, i) => s + (i.qty * parseFloat(i.rate)), 0));
       console.error(err);
-      alert('Network error while placing order.');
+      alert(err && err.message ? err.message : 'Network error while placing order.');
     }});
   }}
 

@@ -63,6 +63,7 @@ class TestPrescriptionRules(IntegrationTestCase):
 		si = frappe.get_doc({
 			"doctype": "Sales Invoice",
 			"customer": RETAIL_CUST,
+			"update_stock": 1,
 			"items": [{"item_code": RX_ITEM}],
 		})
 		self.assertBlocked(si)
@@ -72,6 +73,7 @@ class TestPrescriptionRules(IntegrationTestCase):
 		si_partial1 = frappe.get_doc({
 			"doctype": "Sales Invoice",
 			"customer": RETAIL_CUST,
+			"update_stock": 1,
 			"items": [{"item_code": RX_ITEM}],
 			"nir_prescription": "/files/rx.pdf",
 		})
@@ -81,6 +83,7 @@ class TestPrescriptionRules(IntegrationTestCase):
 		si_partial2 = frappe.get_doc({
 			"doctype": "Sales Invoice",
 			"customer": RETAIL_CUST,
+			"update_stock": 1,
 			"items": [{"item_code": RX_ITEM}],
 			"nir_prescription": "/files/rx.pdf",
 			"nir_doctor_name": "Dr. Smith",

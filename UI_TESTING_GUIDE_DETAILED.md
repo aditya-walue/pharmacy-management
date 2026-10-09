@@ -56,12 +56,11 @@ The platform orchestrates the end-to-end pharmaceutical supply chain from suppli
 |---|---|---|---|
 | **Online Medicine Catalog** | `/order` (Frappe Builder) | Streamlined pharmacy catalog showing essential clinical details only (*Active Generic Salt*, *Strength*, *Form/Packaging*, *Rx/OTC Tag*, *Price*), clinical department tabs, and dosage filters. | Customer self-service; Real-time pricing from Item Price |
 | **Dedicated Shopping Cart** | `/cart` (Frappe Builder) | Comprehensive cart review table with quantity modifiers, active chemical formulas, fulfillment selector (Home Delivery with Pincode or Store Pickup with Store locator). | Customer self-service |
-| **Prescription Capture & Special Indent** | `/cart` | Mandatory prescription upload for Schedule H/H1 medicines. Optional toggle for **Patient Special Order** for emergency non-stocked pharmaceuticals. | Customer attaches prescription |
+| **Prescription Capture & Special Indent** | `/cart` | Optional prescription upload for Schedule H/H1 medicines. Optional toggle for **Patient Special Order** for emergency non-stocked pharmaceuticals. Attached prescription file is saved against the Sales Order for pharmacist reference. | Customer attaches prescription |
 | **Payment Gateway & Auto-Billing** | `/cart` → Razorpay SDK | Direct integration with **Razorpay Secure Checkout** (`checkout.js`). Upon successful payment, automatically submits Sales Order, generates and submits official GST **Sales Invoice**, and posts **Payment Entry** (Status: Paid). Also supports Cash on Delivery (COD). | Razorpay automated webhook / signature verification; Backend auto-billing |
-| **Prescription Review & Order Release** | `Sales Order` (Online Order tab) | Orders containing Rx drugs enter `Prescription Review`. Pharmacist inspects doctor registration, patient diagnosis, and prescription image before approving. | **Online Order Pharmacist** (Approves or Rejects with documented reason) |
 | **Customer Orders & Tax Invoices Page** | `/orders` (Frappe Builder) | Real-time customer tracking page: searches orders by phone, email, or order ID; displays status pills, fulfillment tracking, and interactive modal to view & print official GST Sales Invoices. Includes direct Razorpay pay button for pending orders. | Customer self-service |
 | **Automated Customer Email Updates** | `pharmacy.online.order_notifications` | Branded HTML emails dispatched automatically to customer email upon order placement, payment confirmation, and status changes (*Confirmed*, *Dispatched*, *Delivered*). | System-automated via Frappe Email Queue |
-| **Fulfillment & Batch Picking** | `Sales Order` → `Sales Invoice` / `Delivery Note` | Auto-allocates order lines to nearest retail store with inventory. Store picks earliest-expiry batches via FEFO and hands over to rider/patient. | **Store Pharmacist** dispenses and validates batches |
+| **Fulfillment & Batch Picking** | `Sales Order` → `Sales Invoice` / `Delivery Note` | Auto-allocates order lines to nearest retail store with inventory. Store picks earliest-expiry batches via FEFO and hands over to rider/patient. Pharmacist can view uploaded prescription directly from the Sales Order form via **View Prescription**. | **Store Pharmacist** dispenses and validates batches |
 
 #### Flow 4 — Store Returns & Supplier Credit
 
@@ -89,7 +88,7 @@ The platform orchestrates the end-to-end pharmaceutical supply chain from suppli
 | **Retail POS** | `POS Invoice` / `Sales Invoice` | Cashier manual discount exceeds standard limit (e.g., > 5%) | **Store Pharmacist** (up to 20%) or **Area Manager** (above 20%) | Cashier cannot approve own discount | POS modal prompts supervisor PIN / authorization. |
 | **Physical Inventory** | `Stock Count` / `Stock Reconciliation` | Cycle count or audit discrepancy between physical count and system ledger | Up to threshold: **Warehouse Manager**; Above threshold or scheduled drugs: **Compliance Pharmacist** / **Pharmacy Management** | Count taker cannot approve variance | Stock Count submission triggers approval workflow before ledger adjustment. |
 | **Inbound Quality** | `Quarantine Decision` | Temperature breach (cold-chain), damaged goods, or failed visual QC | **Compliance Pharmacist** (for medicines) or **Warehouse Manager** (for FMCG) | Receiving staff cannot make QA decision | Quarantine Decision: **Submit** releases stock or initiates debit note. |
-| **Online Rx Orders** | `Sales Order` | Online order containing Schedule H, H1, or Rx required medication | **Online Order Pharmacist** (or **Store Pharmacist**) | Pharmacist must inspect uploaded doctor prescription | Sales Order → **Prescription → Approve Prescription** releases order to Confirmed. |
+| **Online Rx Orders** | `Sales Order` | Online order containing Schedule H, H1, or Rx required medication | **Online Order Pharmacist** (or **Store Pharmacist**) | Pharmacist inspects uploaded doctor prescription before fulfillment | Sales Order → **Prescription → View Prescription** button opens attached document. |
 | **Controlled Drugs** | `Controlled Drug Register` | Movement, receipt, internal transfer, or destruction of Schedule X / NDPS stock | **Compliance Pharmacist** (Licensed Drug Custodian) | Strict custody log; two-person verification for destruction | Statutory register updated; requires custodian credential verification. |
 
 ---
@@ -907,6 +906,41 @@ Things to try at the counter with this data:
      * `Out for Delivery` / `Ready for Pickup`
      * `Order Delivered`
    - Check the **Sales Order Activity Timeline** (bottom of the document) to view audit timestamps for all dispatched emails and Razorpay transactions.
+
+---
+
+### 29. Online Order Dispatch & Delivery by Delivery Trip
+
+**Statuses (Sales Order → Online Order tab → Online Status)** follow ERPNext **Delivery Trip** (Stock → Delivery Trip):
+
+| Event | Online Status | Customer email |
+|---|---|---|
+| Delivery Note submitted (home delivery) | unchanged (*Confirmed*) | — |
+| Delivery Trip with that Delivery Note **submitted** | **Dispatched** (*Partly Dispatched* if the order is not fully shipped) | "out for delivery" |
+| Trip stop ticked **Visited** (trip *In Transit* / *Completed*) | **Delivered** | "delivered" |
+| Delivery Trip cancelled | back to **Confirmed** | — |
+| Store pickup: Delivery Note submitted | **Delivered** (no trip) | "delivered" |
+
+1. **Address:** on `/cart` (Home Delivery) the customer fills Address Title, Address Type (Shipping / Billing), Address Line 1 and 2, Postal Code, City, State, optional GSTIN / UIN and *Save as my preferred address*. Typing the postal code fills City and State and shows whether we deliver there. On order it is saved as an **Address linked to the customer**. GST Category is *Registered Regular* with a GSTIN (the GSTIN is also set on the customer for a B2B invoice), else *Unregistered*. It is set on the Sales Order as shipping and billing address and becomes the customer's primary address. An identical address is reused, not duplicated. A Delivery Trip stop needs an address; for older web orders with no address, add one to the Delivery Note (*Shipping Address*) first.
+   **Prescription:** on `/cart` attach a PDF, JPG or PNG (max 5 MB). It is uploaded as a **private** file when the order is placed (wrong type, a fake file or an oversize file is refused), linked on the Sales Order (*Prescription*) and attached to it. Pharmacists open it from Sales Order → **Prescription → View Prescription**; the public can't download it.
+2. Sales Order → **Create → Delivery Note** → Submit → status stays *Confirmed*.
+3. **Delivery Trip → New**: Company, Departure Time, **Driver** (required), **Vehicle**. In Delivery Stops pick the **Delivery Note**. Customer, Address and contact fill in automatically: first the Delivery Note's shipping / billing address, else the customer's shipping address, then primary, then any saved address. They are filled again on save. With no address anywhere → *"Row #1: … has no delivery address"*. Save → **Submit** → the Sales Order shows **Dispatched**.
+4. On the submitted trip click **Mark Delivered → #1 {customer} · {Delivery Note}** (or tick the *Visited* column → **Update**) → Sales Order shows **Delivered**.
+5. Cancel the trip → Sales Order back to **Confirmed**.
+6. **Delivery Rider:** link the rider's login on the **Driver** record (*User* field). A user whose only delivery role is *Delivery Rider* sees, at `/app/delivery-trip`, only **submitted** trips where they are the driver, plus those trips' Delivery Notes, customers and addresses. They click **Mark Delivered → #stop** (or tick the *Visited* column and **Update**), but can't create, submit, cancel or change vehicle, driver or stops. Users with Delivery User / Stock User etc. still see all trips.
+
+---
+
+### 30. Online Order Pick & Pack (Pick List)
+
+**Statuses:** Confirmed → **Picking** (Pick List saved as draft) → **Packed** (Pick List submitted) → Dispatched → Delivered. Cancelling or deleting the Pick List puts the order back to *Confirmed*. The customer is emailed when the order is *Packed*.
+
+1. Online Sales Order from the DC (e.g. one with warehouse *Main DC - _TP*) → **Create → Delivery Note** → Save → blocked: *"Online order lines from the warehouse must be picked and packed first …"*.
+2. Sales Order → **Create → Pick List** → Save. Locations show earliest-expiry batches and DC bins (e.g. *DC General Cool*, *DC General A1*) → order **Picking**.
+3. Picker (role **Picker Packer**, now with Pick List create / submit and Sales Order read) enters **Picked Qty (in stock units)** per line. Submit without **Bag / Box Label** → *"Scan or enter the Bag / Box Label before submitting the pick"*.
+4. Enter the label (e.g. `BAG-0001`) → **Submit** → *Packed By* / *Packed On* filled; order **Packed**.
+5. Pick List → **Create → Delivery Note** → lines carry the Pick List → Submit → Delivery Trip (§29).
+6. Store orders: the Pick List is optional; a Delivery Note straight from the Sales Order is allowed.
 
 ---
 

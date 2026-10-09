@@ -5,6 +5,8 @@ import frappe
 from frappe import _
 from frappe.utils import cint, flt, getdate, now_datetime, today, add_days
 
+from pharmacy.overrides.pos_billing import uom_factor
+
 
 @frappe.whitelist(allow_guest=True)
 def get_available_medicines(search_term=None, limit=50):
@@ -26,7 +28,8 @@ def get_available_medicines(search_term=None, limit=50):
 		"nir_regulatory_category as category",
 		"nir_storage_condition as storage_condition",
 		"nir_rx_required as rx_required",
-		"stock_uom as uom",
+		"stock_uom",
+		"sales_uom",
 		"valuation_rate as rate",
 		"image",
 	]
@@ -56,7 +59,11 @@ def get_available_medicines(search_term=None, limit=50):
 		if it["item_code"].startswith("138-CMS") or it["item_code"] == "dolo650":
 			continue
 
-		price = frappe.db.get_value("Item Price", {"item_code": it["item_code"], "selling": 1}, "price_list_rate")
+		it["uom"] = it.get("sales_uom") or it.get("stock_uom") or "Unit"
+
+		price = frappe.db.get_value("Item Price", {"item_code": it["item_code"], "uom": it["uom"], "selling": 1}, "price_list_rate")
+		if not price:
+			price = frappe.db.get_value("Item Price", {"item_code": it["item_code"], "selling": 1}, "price_list_rate")
 		if not price:
 			price = frappe.db.get_value("Item Price", {"item_code": it["item_code"]}, "price_list_rate")
 		if price and flt(price) > 0:
@@ -184,19 +191,36 @@ def submit_online_order(
 	for row in items_list:
 		code = row.get("item_code")
 		qty = flt(row.get("qty") or 1.0)
-		rate = flt(row.get("rate") or 0.0)
+		if qty < 1.0:
+			qty = 1.0
+		qty = round(qty)
 
+		item_meta = frappe.db.get_value(
+			"Item", code, ["sales_uom", "stock_uom", "valuation_rate", "nir_rx_required"], as_dict=True
+		) or {}
+		uom = row.get("uom") or item_meta.get("sales_uom") or item_meta.get("stock_uom") or "Unit"
+		stock_uom = item_meta.get("stock_uom") or uom
+
+		factor = uom_factor(code, uom, stock_uom)
+		stock_qty = flt(qty) * flt(factor)
+
+		rate = flt(row.get("rate") or 0.0)
 		if not rate or rate <= 0:
-			rate = flt(frappe.db.get_value("Item", code, "valuation_rate") or 100.0)
+			price = frappe.db.get_value("Item Price", {"item_code": code, "uom": uom, "selling": 1}, "price_list_rate")
+			if not price:
+				price = frappe.db.get_value("Item Price", {"item_code": code, "selling": 1}, "price_list_rate")
+			rate = flt(price or item_meta.get("valuation_rate") or 100.0)
 
 		# Check if prescription required
-		is_rx = frappe.db.get_value("Item", code, "nir_rx_required")
-		if is_rx:
+		if item_meta.get("nir_rx_required"):
 			rx_required = 1
 
 		so_items.append({
 			"item_code": code,
 			"qty": qty,
+			"uom": uom,
+			"conversion_factor": factor,
+			"stock_qty": stock_qty,
 			"rate": rate,
 			"warehouse": default_warehouse,
 			"delivery_date": add_days(today(), 1),
@@ -234,20 +258,30 @@ def submit_online_order(
 		})
 
 	if prescription_file:
-		so_data["nir_prescription"] = prescription_file
+		so_data["nir_prescription"] = check_uploaded_prescription(prescription_file)
 
-	# Online order lifecycle status
+	# Online order lifecycle status (no prescription approval gate)
 	if rx_required:
 		so_data["nir_rx_required"] = 1
-		so_data["nir_online_status"] = "Prescription Review"
-	elif payment_method == "Razorpay":
+	if payment_method == "Razorpay":
 		so_data["nir_online_status"] = "Awaiting Payment"
 	else:
 		so_data["nir_online_status"] = "Confirmed"
 
+	# home deliveries need the address on the Sales Order / Delivery Note, and on the Delivery Trip stop
+	if fulfillment_type == "Home Delivery":
+		if not address or not str(address).strip():
+			frappe.throw(_("Please enter the delivery address."))
+		address_name = save_delivery_address(customer_doc_name, customer_name.strip(), address, pincode, mobile)
+		so_data.update({"shipping_address_name": address_name, "customer_address": address_name})
+
 	so = frappe.get_doc(so_data)
 	so.flags.ignore_permissions = True
 	so.insert()
+	if so.nir_prescription:
+		# attached to the order, so pharmacists who can open the order can open the private file
+		frappe.db.set_value("File", {"file_url": so.nir_prescription, "attached_to_name": ("is", "not set")},
+			{"attached_to_doctype": "Sales Order", "attached_to_name": so.name, "attached_to_field": "nir_prescription"})
 
 	if patient_notes and patient_notes.strip():
 		so.add_comment("Comment", _("Customer Special Instructions: {0}").format(patient_notes.strip()))
@@ -276,6 +310,148 @@ def submit_online_order(
 		"payment_method": payment_method,
 		"message": _("Sales Order {0} created successfully!").format(so.name),
 	}
+
+
+def serving_store_address(pincode):
+	store = frappe.db.get_value("Pharmacy Store Pincode", {"pincode": pincode, "is_active": 1}, "parent") if pincode else None
+	return frappe.db.get_value("Pharmacy Store", store, "address") if store else None
+
+
+@frappe.whitelist(allow_guest=True)
+def get_pincode_details(pincode: str):
+	"""City / state for the address form, and whether we deliver there."""
+	pincode = (pincode or "").strip()
+	store_address = serving_store_address(pincode)
+	city, state = frappe.db.get_value("Address", store_address, ["city", "state"]) if store_address else (None, None)
+	dc_everywhere = frappe.db.get_single_value("Online Order Settings", "dc_ships_to_all_pincodes")
+	serviceable = bool(store_address or dc_everywhere)
+	return {
+		"pincode": pincode, "city": city, "state": state, "serviceable": serviceable,
+		"message": _("Delivery available") if serviceable else _("Sorry, we don't deliver to {0} yet").format(pincode),
+	}
+
+
+PRESCRIPTION_TYPES = {
+	# extension: file signature
+	"pdf": (b"%PDF",),
+	"png": (b"\x89PNG",),
+	"jpg": (b"\xff\xd8\xff",),
+	"jpeg": (b"\xff\xd8\xff",),
+}
+MAX_PRESCRIPTION_BYTES = 5 * 1024 * 1024
+
+
+@frappe.whitelist(allow_guest=True, methods=["POST"])
+def upload_prescription():
+	"""Prescription photo / scan from /cart, saved as a private file; the order links it."""
+	upload = frappe.request.files.get("file") if frappe.request and frappe.request.files else None
+	if not upload or not upload.filename:
+		frappe.throw(_("Choose a prescription file to upload."))
+	ext = upload.filename.rsplit(".", 1)[-1].lower() if "." in upload.filename else ""
+	if ext not in PRESCRIPTION_TYPES:
+		frappe.throw(_("Upload the prescription as a PDF, JPG or PNG."))
+	content = upload.stream.read(MAX_PRESCRIPTION_BYTES + 1)
+	if len(content) > MAX_PRESCRIPTION_BYTES:
+		frappe.throw(_("The prescription file must be 5 MB or smaller."))
+	if not any(content.startswith(sig) for sig in PRESCRIPTION_TYPES[ext]):
+		frappe.throw(_("This file is not a valid {0}.").format(ext.upper()))
+	doc = frappe.get_doc({
+		"doctype": "File", "file_name": f"rx-{frappe.generate_hash(length=12)}.{ext}", "content": content, "is_private": 1,
+	})
+	doc.flags.ignore_permissions = True
+	doc.insert()
+	return {"file_url": doc.file_url}
+
+
+def check_uploaded_prescription(file_url):
+	"""Only a file uploaded through upload_prescription by this visitor, not yet attached to another order."""
+	file = frappe.db.get_value("File", {"file_url": file_url}, ["name", "owner", "is_private", "attached_to_name", "creation"], as_dict=True)
+	if (not file or not file.is_private or file.attached_to_name or file.owner != frappe.session.user
+			or not file_url.startswith("/private/files/rx-")
+			or frappe.utils.time_diff_in_hours(frappe.utils.now_datetime(), file.creation) > 24):
+		frappe.throw(_("Please upload the prescription again."))
+	return file_url
+
+
+@frappe.whitelist(allow_guest=True)
+def get_states():
+	"""States accepted on an Indian GST address, for the address form."""
+	from india_compliance.gst_india.constants import INDIAN_STATES
+
+	return sorted(INDIAN_STATES)
+
+
+def normalise_state(state, gstin=None, pincode=None):
+	"""Exact India Compliance state name from what was typed, the GSTIN's state code, or the store serving the pincode."""
+	from india_compliance.gst_india.constants import INDIAN_STATES
+
+	by_name = {name.lower(): name for name in INDIAN_STATES}
+	typed = " ".join((state or "").replace("&", "and").split()).lower()
+	if typed in by_name:
+		return by_name[typed]
+	if gstin and len(gstin) >= 2:
+		by_code = {code: name for name, code in INDIAN_STATES.items()}
+		if gstin[:2] in by_code:
+			return by_code[gstin[:2]]
+	store_address = serving_store_address(pincode)
+	if not typed and store_address:
+		return frappe.db.get_value("Address", store_address, "state")
+	frappe.throw(_("Please choose a valid state from the list (you entered '{0}')").format(state or ""), title=_("Invalid State"))
+
+
+def save_delivery_address(customer, title, address, pincode=None, phone=None):
+	"""The address typed on /cart, saved as an Address linked to the customer (an identical one is reused)."""
+	if isinstance(address, str) and address.strip().startswith("{"):
+		address = json.loads(address)
+	if isinstance(address, str):
+		lines = [line.strip() for line in address.replace("\r", "").split("\n") if line.strip()] or [address.strip()]
+		address = {"address_line1": lines[0], "address_line2": ", ".join(lines[1:])}
+	address = frappe._dict(address)
+	pincode = (address.pincode or pincode or "").strip()
+	line1 = (address.address_line1 or "").strip()[:140]
+	if not line1:
+		frappe.throw(_("Please enter Address Line 1."))
+	gstin = (address.gstin or "").strip().upper()
+
+	existing = frappe.db.sql(
+		"""select addr.name from `tabAddress` addr join `tabDynamic Link` link on link.parent = addr.name and link.parenttype = 'Address'
+		where link.link_doctype = 'Customer' and link.link_name = %s and addr.address_line1 = %s and ifnull(addr.pincode, '') = %s
+			and ifnull(addr.gstin, '') = %s and addr.disabled = 0
+		limit 1""",
+		(customer, line1, pincode, gstin),
+	)
+	if existing:
+		name = existing[0][0]
+	else:
+		store_address = serving_store_address(pincode)
+		default_city, default_state = frappe.db.get_value("Address", store_address, ["city", "state"]) if store_address else (None, None)
+		doc = frappe.get_doc({
+			"doctype": "Address",
+			"address_title": (address.address_title or title or customer).strip(),
+			"address_type": address.address_type if address.address_type in ("Billing", "Shipping") else "Shipping",
+			"address_line1": line1,
+			"address_line2": (address.address_line2 or "").strip()[:140] or None,
+			"city": (address.city or default_city or "").strip() or None,
+			"state": normalise_state(address.state or default_state, gstin, pincode),
+			"pincode": pincode,
+			"country": "India",
+			"phone": address.phone or phone,
+			"gstin": gstin or None,
+			"gst_category": "Registered Regular" if gstin else "Unregistered",
+			"is_shipping_address": 1,
+			"is_primary_address": 1 if address.get("is_primary_address", 1) else 0,
+			"links": [{"link_doctype": "Customer", "link_name": customer}],
+		})
+		doc.flags.ignore_permissions = True
+		doc.insert()
+		name = doc.name
+
+	if gstin and not frappe.db.get_value("Customer", customer, "gstin"):
+		# a business buyer: the invoice carries their GSTIN (B2B)
+		frappe.db.set_value("Customer", customer, {"gstin": gstin, "gst_category": "Registered Regular"})
+	if address.get("is_primary_address", 1):
+		frappe.db.set_value("Customer", customer, "customer_primary_address", name)
+	return name
 
 
 @frappe.whitelist(allow_guest=True)
@@ -366,20 +542,53 @@ def verify_razorpay_payment(sales_order: str, razorpay_payment_id: str, razorpay
 				si.submit()
 		else:
 			from erpnext.selling.doctype.sales_order.sales_order import make_sales_invoice
-			si = make_sales_invoice(so.name)
-			si.flags.ignore_permissions = True
 
-			# Ensure retail store warehouse is set if current warehouse lacks retail drug licence
-			store_wh = frappe.db.get_value("Pharmacy Store", {"disabled": 0}, "warehouse")
-			if not si.set_warehouse or "DC" in (si.set_warehouse or ""):
-				if store_wh:
-					si.set_warehouse = store_wh
-					for item in si.items:
-						item.warehouse = store_wh
+			# Don't attempt if SO is already fully billed
+			so.reload()
+			if flt(so.per_billed) >= 100:
+				# Already billed – find the submitted SI
+				billed_si = frappe.db.sql("""
+					SELECT DISTINCT parent FROM `tabSales Invoice Item`
+					WHERE sales_order = %s AND docstatus = 1
+					LIMIT 1
+				""", (so.name,), as_dict=True)
+				if billed_si:
+					sales_invoice_name = billed_si[0].parent
+			else:
+				si = make_sales_invoice(so.name)
 
-			si.insert(ignore_permissions=True)
-			si.submit()
-			sales_invoice_name = si.name
+				# Guard: make_sales_invoice returns empty items when nothing left to bill
+				if not si.items:
+					frappe.log_error(
+						f"make_sales_invoice returned 0 items for {so.name} (per_billed={so.per_billed})",
+						"Razorpay Sales Invoice"
+					)
+				else:
+					si.flags.ignore_permissions = True
+
+					# Ensure retail store warehouse is set
+					store_wh = frappe.db.get_value("Pharmacy Store", {"disabled": 0}, "warehouse")
+					if not si.set_warehouse or "DC" in (si.set_warehouse or ""):
+						if store_wh:
+							si.set_warehouse = store_wh
+							for item in si.items:
+								item.warehouse = store_wh
+
+					# Auto-allocate FEFO batches for items that need them
+					from pharmacy.overrides.pos_billing import pick_batch
+					from pharmacy.overrides.stock_hold import get_active_holds
+					holds = get_active_holds({r.item_code for r in si.items})
+					for row in si.items:
+						if not row.batch_no and frappe.get_cached_value("Item", row.item_code, "has_batch_no"):
+							try:
+								row.batch_no = pick_batch(row, si, holds)
+								row.use_serial_batch_fields = 1
+							except Exception:
+								pass  # validation hook will catch it
+
+					si.insert(ignore_permissions=True)
+					si.submit()
+					sales_invoice_name = si.name
 
 		# 3. Create and submit Payment Entry against Sales Invoice
 		if sales_invoice_name:

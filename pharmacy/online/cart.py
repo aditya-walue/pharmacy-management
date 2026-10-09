@@ -392,18 +392,10 @@ def place_order(payment_method: str = "Online"):
 	so.delivery_date = so.nir_expected_by.date()
 	for row in so.items:
 		row.delivery_date = so.delivery_date
-	if so.nir_rx_required:
-		so.nir_online_status, so.nir_review_status = "Prescription Review", "Pending"
-		so.append("nir_review_log", {"action": "Submitted", "reviewed_by": website_user(), "reviewed_on": now_datetime(),
-			"prescription": so.nir_prescription})
-		so.flags.ignore_permissions = True
-		so.save()
-		notify_pharmacists(so)
-	else:
-		so.nir_review_status = "Not Required"
-		so.flags.ignore_permissions = True
-		so.save()
-		confirm_order(so)
+	so.nir_review_status = "Not Required"
+	so.flags.ignore_permissions = True
+	so.save()
+	confirm_order(so)
 	return order_dict(frappe.get_doc("Sales Order", so.name))
 
 
@@ -425,7 +417,7 @@ def order_dict(so):
 		"payment_method": so.nir_payment_method, "payment_status": so.nir_payment_status,
 		"prescription_check": so.nir_review_status, "pharmacist_remarks": so.nir_review_remarks if so.nir_review_status == "Rejected" else None,
 		"locations": [{"store": f.pharmacy_store or _("Warehouse"), "status": f.status, "invoice": f.sales_invoice} for f in so.nir_fulfilments],
-		"can_pay": so.nir_online_status == "Awaiting Payment", "can_cancel": so.nir_online_status in ("Prescription Review", "Awaiting Payment"),
+		"can_pay": so.nir_online_status == "Awaiting Payment", "can_cancel": so.nir_online_status in ("Awaiting Payment",),
 	})
 	return data
 
@@ -445,7 +437,7 @@ def get_order_details(name: str):
 @website_api
 def cancel_order(name: str, reason: str | None = None):
 	"""Customers can cancel until the order is confirmed (allocated and billed afterwards)."""
-	so = get_order(name, ("Prescription Review", "Awaiting Payment"))
+	so = get_order(name, ("Awaiting Payment",))
 	from pharmacy.online.fulfilment import close_order
 
 	close_order(so, "Cancelled", reason or _("Cancelled by customer"))

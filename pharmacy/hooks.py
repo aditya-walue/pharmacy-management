@@ -95,6 +95,7 @@ doctype_js = {
 	"Gate Entry": "public/js/gate_entry.js",
 	"Customer": "public/js/customer.js",
 	"Sales Order": "public/js/online_sales_order.js",
+	"Delivery Trip": "public/js/delivery_trip.js",
 	"Sales Invoice": "public/js/store_bill.js",
 }
 
@@ -196,6 +197,13 @@ setup_wizard_complete = "pharmacy.install.setup_wizard_complete"
 # Hook on document methods and events
 
 doc_events = {
+	"Delivery Trip": {
+		"before_validate": "pharmacy.overrides.delivery_trip.fill_stops",
+		"validate": "pharmacy.overrides.rider.validate_rider_update",
+		"on_submit": "pharmacy.online.delivery.update_from_trip",
+		"on_update_after_submit": "pharmacy.online.delivery.update_from_trip",
+		"on_cancel": "pharmacy.online.delivery.update_from_trip",
+	},
 	"Payment Request": {
 		"on_payment_authorized": "pharmacy.online.payment.on_payment_authorized",
 	},
@@ -300,6 +308,7 @@ doc_events = {
 	"Sales Invoice": {
 		"validate": [
 			# first: sets batches the hold / quarantine checks below then look at
+			"pharmacy.overrides.delivery_note.validate_sales_invoice",
 			"pharmacy.overrides.pos_billing.apply_pos_rules",
 			"pharmacy.overrides.prescription.fill_from_saved_prescription",
 			"pharmacy.overrides.party_licence.validate_party_licence",
@@ -327,6 +336,7 @@ doc_events = {
 	"POS Invoice": {
 		"validate": [
 			# first: sets batches the hold / quarantine checks below then look at
+			"pharmacy.overrides.delivery_note.validate_sales_invoice",
 			"pharmacy.overrides.pos_billing.apply_pos_rules",
 			"pharmacy.overrides.prescription.fill_from_saved_prescription",
 			"pharmacy.overrides.party_licence.validate_party_licence",
@@ -347,11 +357,17 @@ doc_events = {
 	},
 	"Delivery Note": {
 		"validate": [
+			"pharmacy.overrides.delivery_note.validate_delivery_note",
+			"pharmacy.online.picking.require_pick_for_dc",
 			"pharmacy.overrides.party_licence.validate_party_licence",
 			"pharmacy.overrides.quarantine.block_allocation",
 			"pharmacy.overrides.stock_hold.block_held_allocation",
 		],
-		"on_submit": "pharmacy.overrides.shelf_life.validate_shelf_life",
+		"on_submit": [
+			"pharmacy.overrides.shelf_life.validate_shelf_life",
+			"pharmacy.online.delivery.update_from_delivery_note",
+		],
+		"on_cancel": "pharmacy.online.delivery.update_from_delivery_note",
 		"before_submit": "pharmacy.overrides.controlled_drugs.require_custodian",
 	},
 	"Stock Entry": {
@@ -391,6 +407,7 @@ doc_events = {
 	},
 	"Sales Order": {
 		"validate": [
+			"pharmacy.overrides.delivery_note.validate_sales_order",
 			"pharmacy.overrides.patient_order.validate_patient_order",
 			"pharmacy.overrides.quarantine.block_allocation",
 			"pharmacy.overrides.stock_hold.block_held_allocation",
@@ -402,6 +419,11 @@ doc_events = {
 			"pharmacy.overrides.quarantine.block_allocation",
 			"pharmacy.overrides.stock_hold.block_held_allocation",
 		],
+		"before_submit": "pharmacy.online.picking.require_package_label",
+		"on_update": "pharmacy.online.picking.update_orders",
+		"on_submit": "pharmacy.online.picking.update_orders",
+		"on_cancel": "pharmacy.online.picking.update_orders",
+		"after_delete": "pharmacy.online.picking.update_orders",
 	},
 	"Stock Reservation Entry": {
 		"validate": [
@@ -533,3 +555,14 @@ override_whitelisted_methods = {
 # List of apps whose translatable strings should be excluded from this app's translations.
 # ignore_translatable_strings_from = []
 
+
+
+permission_query_conditions = {
+	"Delivery Trip": "pharmacy.overrides.rider.trip_conditions",
+	"Delivery Note": "pharmacy.overrides.rider.delivery_note_conditions",
+}
+
+has_permission = {
+	"Delivery Trip": "pharmacy.overrides.rider.has_trip_permission",
+	"Delivery Note": "pharmacy.overrides.rider.has_delivery_note_permission",
+}
