@@ -466,7 +466,8 @@ def sample_bills(company, profile, store, walk_in, taxes):
 		("Mr. R. Iyer", [("PAN-40", 1, "Strip"), ("GLYCOMET-500", 2, "Strip"), ("NIR-PCM-500", 1, "Strip")],
 			{"nir_prescription": "/files/demo-prescription.pdf", "nir_doctor_name": "Dr. M. Nair", "nir_doctor_reg_no": "MMC-24680"}),
 		(walk_in, [("ALPRAX-025", 1, "Strip"), ("VOLINI-30", 1, "Tube")],
-			{"nir_prescription": "/files/demo-prescription.pdf", "nir_doctor_name": "Dr. S. Rao", "nir_doctor_reg_no": "MMC-67890"}),
+			{"nir_prescription": "/files/demo-prescription.pdf", "nir_doctor_name": "Dr. S. Rao", "nir_doctor_reg_no": "MMC-67890",
+				"nir_patient_name": "Walk-in Patient"}),
 	]
 	created = []
 	for customer, lines, extra in bills:
